@@ -1,0 +1,1 @@
+"C:\Program Files (x86)\Epic Games\4.13\Engine\Binaries\DotNET\UnrealBuildTool.exe" -2015 -projectfiles -project="D:\Users\vazquezre\Desktop\Motores3\MazeChase\MazeChase.uproject" -game -rocket -progress

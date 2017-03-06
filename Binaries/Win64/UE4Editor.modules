@@ -1,8 +1,8 @@
 {
 	"Changelist" : 3172292,
-	"BuildId" : "26358ad6-5c0e-4b57-aff5-f8c7fb8fc933",
+	"BuildId" : "81cf4799-44c8-4388-8194-225f9a049bb9",
 	"Modules" : 
 	{
-		"MazeChase" : "UE4Editor-MazeChase.dll"
+		"MazeChase" : "UE4Editor-MazeChase-6824.dll"
 	}
 }
