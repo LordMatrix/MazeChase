@@ -3,6 +3,11 @@
 #pragma once
 
 #include "GameFramework/Actor.h"
+#include "Cell.h"
+#include <iostream>
+#include <stdlib.h>
+#include <time.h>
+#include <vector>
 #include "Labyrinth.generated.h"
 
 UCLASS()
@@ -11,15 +16,24 @@ class MAZECHASE_API ALabyrinth : public AActor
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
 	ALabyrinth();
 
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	
-	// Called every frame
 	virtual void Tick( float DeltaSeconds ) override;
 
+	void generate();
 	
-	
+	// Create constants (ROWS, COLS) to store the size of the maze.
+	static const int ROWS = 30;
+	static const int COLS = 30;
+
+	// Create a 2-D array ([ROWS][COLS]) of Cell objects.
+	Cell maze_[ROWS][COLS];
+
+	//Starting position
+	int startX, startY;
+
+	//Exit position
+	int exitX, exitY;
 };

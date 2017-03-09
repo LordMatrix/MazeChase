@@ -3,91 +3,144 @@
 #include "MazeChase.h"
 #include "Labyrinth.h"
 
-/*
-MAZE ALGORITHM IN JAVASCRIPT
-
-function newMaze(x, y) {
-
-	// Establish variables and starting grid
-	var totalCells = x*y;
-	var cells = new Array();
-	var unvis = new Array();
-	for (var i = 0; i < y; i++) {
-		cells[i] = new Array();
-		unvis[i] = new Array();
-		for (var j = 0; j < x; j++) {
-			cells[i][j] = [0,0,0,0];
-			unvis[i][j] = true;
-		}
-	}
-
-	// Set a random position to start from
-	var currentCell = [Math.floor(Math.random()*y), Math.floor(Math.random()*x)];
-	var path = [currentCell];
-	unvis[currentCell[0]][currentCell[1]] = false;
-	var visited = 1;
-
-	// Loop through all available cell positions
-	while (visited < totalCells) {
-		// Determine neighboring cells
-		var pot = [[currentCell[0]-1, currentCell[1], 0, 2],
-		[currentCell[0], currentCell[1]+1, 1, 3],
-		[currentCell[0]+1, currentCell[1], 2, 0],
-		[currentCell[0], currentCell[1]-1, 3, 1]];
-		var neighbors = new Array();
-
-		// Determine if each neighboring cell is in game grid, and whether it has already been checked
-		for (var l = 0; l < 4; l++) {
-			if (pot[l][0] > -1 && pot[l][0] < y && pot[l][1] > -1 && pot[l][1] < x && unvis[pot[l][0]][pot[l][1]]) { neighbors.push(pot[l]); }
-		}
-
-		// If at least one active neighboring cell has been found
-		if (neighbors.length) {
-			// Choose one of the neighbors at random
-			next = neighbors[Math.floor(Math.random()*neighbors.length)];
-
-			// Remove the wall between the current cell and the chosen neighboring cell
-			cells[currentCell[0]][currentCell[1]][next[2]] = 1;
-			cells[next[0]][next[1]][next[3]] = 1;
-
-			// Mark the neighbor as visited, and set it as the current cell
-			unvis[next[0]][next[1]] = false;
-			visited++;
-			currentCell = [next[0], next[1]];
-			path.push(currentCell);
-		}
-		// Otherwise go back up a step and keep going
-		else {
-			currentCell = path.pop();
-		}
-	}
-
-	return cells;
-}
-
-
-*/
-
-
 // Sets default values
-ALabyrinth::ALabyrinth()
-{
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+ALabyrinth::ALabyrinth(){
 	PrimaryActorTick.bCanEverTick = true;
-
 }
 
-// Called when the game starts or when spawned
-void ALabyrinth::BeginPlay()
-{
+
+void ALabyrinth::BeginPlay() {
 	Super::BeginPlay();
-	
 }
 
-// Called every frame
-void ALabyrinth::Tick( float DeltaTime )
-{
+
+void ALabyrinth::Tick( float DeltaTime ){
 	Super::Tick( DeltaTime );
-
 }
 
+void ALabyrinth::generate() {
+	using std::cout;
+	using std::vector;
+
+	// Create constants (ROWS, COLS) to store the size of the maze_.
+	const int ROWS = 30;
+	const int COLS = 30;
+
+
+	// Create an enum named DIR to keep track of the four directions (NORTH, EAST, SOUTH, WEST)
+	enum DIR { NORTH, SOUTH, EAST, WEST };
+
+
+	/////////////////////////////////////////////
+
+
+
+	// variables
+	//int ran_dir;
+
+	// Randomize the random number function.
+	srand(time(NULL));
+
+
+	// For each Cell in the maze_:
+	for (int row = 0; row < ROWS; row++)
+		for (int col = 0; col < COLS; col++) {
+			// set visited to false
+			maze_[row][col].setVisited(false);
+			// set its position to its row and column in the maze_
+			maze_[row][col].setPosition(row, col);
+			// set the Cell's walls to Cell::WALL_ALL
+			maze_[row][col].setWalls(Cell::WALL_ALL);
+		}
+
+	//Create curX and curY variables and set them to a random position in the maze_.
+	int curX = rand() % ROWS;
+	int curY = rand() % COLS;
+
+	//Set starting position
+	startX = curX;
+	startY = curY;
+
+	// Create a vector of Cell objects named trail which will be used as a stack.
+	vector<Cell> trail;
+
+	// Create a vector of DIR values named live.
+	vector<DIR> live;
+
+	// Grab the Cell at the curX, curY position and push it on the trail stack.
+	trail.push_back(maze_[curX][curY]);
+
+	// While the trail stack is not empty do the following:
+	while (trail.empty() == false) { // stay in here till display
+									 // Empty the live vector.
+		live.clear();
+		// Check the neighbors of the current cell to the north, east, south, and west.
+		// If any of the neighbors have all four walls, add the direction to that 
+		// neighbor to the live vector.
+		if (curY)
+			if (maze_[curX][curY - 1].getWalls() == Cell::WALL_ALL) // West has all walls
+				live.push_back(WEST);
+		if (curY<COLS - 1)
+			if (maze_[curX][curY + 1].getWalls() == Cell::WALL_ALL) // east has all walls
+				live.push_back(EAST);
+		if (curX)
+			if (maze_[curX - 1][curY].getWalls() == Cell::WALL_ALL) // North has all walls
+				live.push_back(NORTH);
+		if (curX<ROWS - 1)
+			if (maze_[curX + 1][curY].getWalls() == Cell::WALL_ALL) // South has all walls
+				live.push_back(SOUTH);
+		// If the live vector is not empty:
+		if (live.empty() == false) {
+			// Choose one of the directions in the live vector at random
+			// ran_dir=rand() % live.size();
+			// cout << "Random dir " << ran_dir << " out of " << live.size() << "\n";
+			// Remove the walls between the current cell and the neighbor in that direction
+			// and Change curX and curY to refer to the neighbor
+			maze_[curX][curY].setVisited(true);
+			int direction = live[rand() % live.size()];
+
+			switch (direction) {
+			case 0:
+				maze_[curX][curY].removeWall(Cell::WALL_NORTH);
+				maze_[--curX][curY].removeWall(Cell::WALL_SOUTH);
+				break;
+			case 1:
+				maze_[curX][curY].removeWall(Cell::WALL_SOUTH);
+				maze_[++curX][curY].removeWall(Cell::WALL_NORTH);
+				break;
+			case 2:
+				maze_[curX][curY].removeWall(Cell::WALL_EAST);
+				maze_[curX][++curY].removeWall(Cell::WALL_WEST);
+				break;
+			case 3:
+				maze_[curX][curY].removeWall(Cell::WALL_WEST);
+				maze_[curX][--curY].removeWall(Cell::WALL_EAST);
+				break;
+			}
+
+			//Mark as exit if this is a map boundary
+			if (curX == 0 || curX == ROWS - 1 || curY == 0 || curY == COLS - 1) {
+				exitX = curX;
+				exitY = curY;
+			}
+
+			// Push the new current cell onto the trail stack
+			/*cout << "maze_ " << curX << ", " << curY << "\n";
+			cin.ignore(); */
+			trail.push_back(maze_[curX][curY]);
+		} //If the live vector was empty:
+		else {
+			// Pop the top item from the trail stack
+			trail.pop_back();
+
+			// If the trail stack is not empty, set curX and curY to refer to the 
+			// position of the top item in the trail stack.
+			if (trail.empty() == false) {
+				//curX = trail[0].getRow();
+				//curY = trail[0].getColumn();
+				curX = trail[trail.size() - 1].getRow();
+				curY = trail[trail.size() - 1].getColumn();
+			}
+		}
+	}
+}
