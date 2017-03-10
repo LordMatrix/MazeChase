@@ -24,10 +24,21 @@ public:
 
 	void generate();
 	
+	
+	Cell getCell(int x, int y);
+
+	UFUNCTION(BlueprintCallable, category = "Maze")
+	int getWallsAt(int x, int y);
+
+	// Wall object
+	UPROPERTY(EditAnywhere, Category = Config)
+	TSubclassOf<AActor> wall;
+
 	// Create constants (ROWS, COLS) to store the size of the maze.
 	static const int ROWS = 30;
 	static const int COLS = 30;
 
+private:
 	// Create a 2-D array ([ROWS][COLS]) of Cell objects.
 	Cell maze_[ROWS][COLS];
 

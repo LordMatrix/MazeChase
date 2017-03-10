@@ -6,6 +6,8 @@
 // Sets default values
 ALabyrinth::ALabyrinth(){
 	PrimaryActorTick.bCanEverTick = true;
+
+	generate();
 }
 
 
@@ -143,4 +145,13 @@ void ALabyrinth::generate() {
 			}
 		}
 	}
+}
+
+
+Cell ALabyrinth::getCell(int x, int y) {
+	return maze_[x][y];
+}
+
+int ALabyrinth::getWallsAt(int x, int y) {
+	return getCell(x, y).getWalls();
 }
