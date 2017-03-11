@@ -10,10 +10,13 @@ ALabyrinth::ALabyrinth(){
 	// Generate maze model
 	generate();
 
-	for (int i = 0; i < 30; i++) {
-		for (int j = 0; j < 30; j++) {
-			FString name = "ChildWall_" + FString::FromInt(i) + "_" + FString::FromInt(j);
-			wallsubs[i][j] = CreateDefaultSubobject<UChildActorComponent>(FName(*name));
+	for (int i = 0; i < ROWS; i++) {
+		for (int j = 0; j < COLS; j++) {
+			//WE CREATE 4 WALLS PER CELL.
+			for (int k = 0; k < 4; k++) {
+				FString name = "ChildWall_" + FString::FromInt(i) + "_" + FString::FromInt(j) + FString::FromInt(k);
+				wallsubs[i][j][k] = CreateDefaultSubobject<UChildActorComponent>(FName(*name));
+			}
 		}
 	}
 }
@@ -23,38 +26,56 @@ void ALabyrinth::BeginPlay() {
 	Super::BeginPlay();
 
 	// Create labyrinth of child actors from the generated model
-	for (int i = 0; i < 30; i++) {
-		for (int j = 0; j < 30; j++) {
+	for (int i = 0; i < ROWS; i++) {
+		for (int j = 0; j < COLS; j++) {
 			int walls = getWallsAt(i, j);
 
 			 
-			if (walls & Cell::WALL_ALL) {
-				UChildActorComponent* wallsub = wallsubs[i][j];
-				
-				wallsub->SetChildActorClass(wall_class_);
-				wallsub->CreateChildActor();
-				wallsub->SetRelativeScale3D(FVector(1.0f, 0.2f, 1.0f));
+			for (int k = 0; k < 4; k++) {
+				if (walls & Cell::WALL_ALL) {
+					UChildActorComponent* wallsub = wallsubs[i][j][k];
 
-				float x = i * 100.0f;
-				float y = j * 100.0f;
+					wallsub->SetChildActorClass(wall_class_);
+					wallsub->CreateChildActor();
+					wallsub->SetRelativeScale3D(FVector(1.0f, 0.2f, 1.0f));
 
-				if (walls & Cell::WALL_NORTH) {
-					wallsub->SetRelativeRotation(FQuat(FVector(0.0f, 0.0f, 1.0f), 90.0f));
-					wallsub->SetRelativeLocation(FVector(x + 50.0f, y, 0.0f));
-				}
-				if (walls & Cell::WALL_EAST) {
-					wallsub->SetRelativeLocation(FVector(x, y + 50.0f, 0.0f));
-				}
-				if (walls & Cell::WALL_SOUTH) {
-					wallsub->SetRelativeRotation(FQuat(FVector(0.0f, 0.0f, 1.0f), 90.0f));
-					wallsub->SetRelativeLocation(FVector(x - 50.0f, y, 0.0f));
-				}
-				if (walls & Cell::WALL_WEST) {
-					wallsub->SetRelativeLocation(FVector(x, y - 50.0f, 0.0f));
-				}
-			}
+					float x = i * WALL_SIZE;
+					float y = j * WALL_SIZE;
 
-			
+					switch (k) {
+						case 0:
+							if (walls & Cell::WALL_NORTH) {
+								wallsub->SetRelativeRotation(FQuat(FVector(0.0f, 0.0f, 1.0f), 1.57f));
+								wallsub->SetRelativeLocation(FVector(x - (WALL_SIZE / 2.0f), y, 0.0f));
+							} else
+								wallsubs[i][j][k]->DestroyComponent();
+							break;
+						case 1:
+							if (walls & Cell::WALL_EAST) {
+								wallsub->SetRelativeLocation(FVector(x, y + (WALL_SIZE / 2.0f), 0.0f));
+							} else
+								wallsubs[i][j][k]->DestroyComponent();
+							break;
+						case 2:
+							if (walls & Cell::WALL_SOUTH) {
+								wallsub->SetRelativeRotation(FQuat(FVector(0.0f, 0.0f, 1.0f), 1.57f));
+								wallsub->SetRelativeLocation(FVector(x + (WALL_SIZE / 2.0f), y, 0.0f));
+							}
+							else
+								wallsubs[i][j][k]->DestroyComponent();
+							break;
+						case 3:
+							if (walls & Cell::WALL_WEST) {
+								wallsub->SetRelativeLocation(FVector(x, y - (WALL_SIZE / 2.0f), 0.0f));
+							} else
+								wallsubs[i][j][k]->DestroyComponent();
+							break;
+					}
+				} else {
+				//If there are no walls, destroy this child actor
+					wallsubs[i][j][k]->DestroyComponent();
+				}
+			}	
 		}
 	}
 }
@@ -68,25 +89,11 @@ void ALabyrinth::generate() {
 	using std::cout;
 	using std::vector;
 
-	// Create constants (ROWS, COLS) to store the size of the maze_.
-	const int ROWS = 30;
-	const int COLS = 30;
-
-
 	// Create an enum named DIR to keep track of the four directions (NORTH, EAST, SOUTH, WEST)
 	enum DIR { NORTH, SOUTH, EAST, WEST };
 
-
-	/////////////////////////////////////////////
-
-
-
-	// variables
-	//int ran_dir;
-
 	// Randomize the random number function.
 	srand(time(NULL));
-
 
 	// For each Cell in the maze_:
 	for (int row = 0; row < ROWS; row++)

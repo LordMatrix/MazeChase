@@ -31,13 +31,16 @@ public:
 	UFUNCTION(BlueprintCallable, category = "Maze")
 	int getWallsAt(int x, int y);
 
+	// Create constants (ROWS, COLS) to store the size of the maze.
+	static const int ROWS = 20;
+	static const int COLS = 20;
+
 	// Wall object
 	UPROPERTY(EditAnywhere, Category = Config)
 	TSubclassOf<AActor> wall_class_;
-	UChildActorComponent* wallsubs[30][30];
-	// Create constants (ROWS, COLS) to store the size of the maze.
-	static const int ROWS = 30;
-	static const int COLS = 30;
+
+	//Wall child actors
+	UChildActorComponent* wallsubs[ROWS][COLS][4];
 
 	static const int WALL_SIZE = 100;
 
