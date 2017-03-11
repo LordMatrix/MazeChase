@@ -25,7 +25,7 @@ ALabyrinth::ALabyrinth(){
 void ALabyrinth::BeginPlay() {
 	Super::BeginPlay();
 
-	// Create labyrinth of child actors from the generated model
+	// Create labyrinth of static meshes from the generated model
 	for (int i = 0; i < ROWS; i++) {
 		for (int j = 0; j < COLS; j++) {
 			int walls = getWallsAt(i, j);
@@ -35,10 +35,7 @@ void ALabyrinth::BeginPlay() {
 				if (walls & Cell::WALL_ALL) {
 					UStaticMeshComponent* wallsub = wallsubs[i][j][k];
 
-					//wallsub->SetChildActorClass(wall_class_);
 					wallsub->SetStaticMesh(wall_class_);
-					//wallsub->CreateChildActor();
-					//wallsub->AttachTo(RootComponent);
 					wallsub->SetRelativeScale3D(FVector(5.0f, 0.2f, 5.0f));
 
 					float x = i * WALL_SIZE;
