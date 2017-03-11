@@ -38,6 +38,8 @@ public:
 	// Wall object
 	UPROPERTY(EditAnywhere, Category = Config)
 		UStaticMesh* wall_class_;
+	UPROPERTY(EditAnywhere, Category = Config)
+		TSubclassOf<AActor> exit_sign_;
 
 	//Wall child actors
 	UStaticMeshComponent* wallsubs[ROWS][COLS][4];

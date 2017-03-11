@@ -25,7 +25,7 @@ ALabyrinth::ALabyrinth(){
 void ALabyrinth::BeginPlay() {
 	Super::BeginPlay();
 
-	// Create labyrinth of static meshes from the generated model
+	/// Create labyrinth of static meshes from the generated model
 	for (int i = 0; i < ROWS; i++) {
 		for (int j = 0; j < COLS; j++) {
 			int walls = getWallsAt(i, j);
@@ -77,6 +77,18 @@ void ALabyrinth::BeginPlay() {
 			}	
 		}
 	}
+
+
+	/// Open and place a mark on the exit
+	for (int k = 0; k < 4; k++) {
+		wallsubs[exitX][exitY][k]->DestroyComponent();
+	}
+
+	FVector location(exitX*WALL_SIZE, exitY*WALL_SIZE, 0.0f);
+	FRotator rotation(0.0f, 0.0f, 0.0f);
+	FActorSpawnParameters spawn_info;
+	//Spawn exit mark
+	AActor* a = static_cast<AActor*>(GetWorld()->SpawnActor(exit_sign_, &location, &rotation, spawn_info));
 }
 
 
