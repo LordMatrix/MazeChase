@@ -37,12 +37,12 @@ public:
 
 	// Wall object
 	UPROPERTY(EditAnywhere, Category = Config)
-	TSubclassOf<AActor> wall_class_;
+		UStaticMesh* wall_class_;
 
 	//Wall child actors
-	UChildActorComponent* wallsubs[ROWS][COLS][4];
+	UStaticMeshComponent* wallsubs[ROWS][COLS][4];
 
-	static const int WALL_SIZE = 100;
+	static const int WALL_SIZE = 500;
 
 private:
 	// Create a 2-D array ([ROWS][COLS]) of Cell objects.

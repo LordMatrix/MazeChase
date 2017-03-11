@@ -15,7 +15,7 @@ ALabyrinth::ALabyrinth(){
 			//WE CREATE 4 WALLS PER CELL.
 			for (int k = 0; k < 4; k++) {
 				FString name = "ChildWall_" + FString::FromInt(i) + "_" + FString::FromInt(j) + FString::FromInt(k);
-				wallsubs[i][j][k] = CreateDefaultSubobject<UChildActorComponent>(FName(*name));
+				wallsubs[i][j][k] = CreateDefaultSubobject<UStaticMeshComponent>(FName(*name));
 			}
 		}
 	}
@@ -33,11 +33,13 @@ void ALabyrinth::BeginPlay() {
 			 
 			for (int k = 0; k < 4; k++) {
 				if (walls & Cell::WALL_ALL) {
-					UChildActorComponent* wallsub = wallsubs[i][j][k];
+					UStaticMeshComponent* wallsub = wallsubs[i][j][k];
 
-					wallsub->SetChildActorClass(wall_class_);
-					wallsub->CreateChildActor();
-					wallsub->SetRelativeScale3D(FVector(1.0f, 0.2f, 1.0f));
+					//wallsub->SetChildActorClass(wall_class_);
+					wallsub->SetStaticMesh(wall_class_);
+					//wallsub->CreateChildActor();
+					//wallsub->AttachTo(RootComponent);
+					wallsub->SetRelativeScale3D(FVector(5.0f, 0.2f, 5.0f));
 
 					float x = i * WALL_SIZE;
 					float y = j * WALL_SIZE;
