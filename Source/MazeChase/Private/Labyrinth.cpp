@@ -7,12 +7,56 @@
 ALabyrinth::ALabyrinth(){
 	PrimaryActorTick.bCanEverTick = true;
 
+	// Generate maze model
 	generate();
+
+	for (int i = 0; i < 30; i++) {
+		for (int j = 0; j < 30; j++) {
+			FString name = "ChildWall_" + FString::FromInt(i) + "_" + FString::FromInt(j);
+			wallsubs[i][j] = CreateDefaultSubobject<UChildActorComponent>(FName(*name));
+		}
+	}
 }
 
 
 void ALabyrinth::BeginPlay() {
 	Super::BeginPlay();
+
+	// Create labyrinth of child actors from the generated model
+	for (int i = 0; i < 30; i++) {
+		for (int j = 0; j < 30; j++) {
+			int walls = getWallsAt(i, j);
+
+			 
+			if (walls & Cell::WALL_ALL) {
+				UChildActorComponent* wallsub = wallsubs[i][j];
+				
+				wallsub->SetChildActorClass(wall_class_);
+				wallsub->CreateChildActor();
+				wallsub->SetRelativeScale3D(FVector(1.0f, 0.2f, 1.0f));
+
+				float x = i * 100.0f;
+				float y = j * 100.0f;
+
+				if (walls & Cell::WALL_NORTH) {
+					wallsub->SetRelativeRotation(FQuat(FVector(0.0f, 0.0f, 1.0f), 90.0f));
+					wallsub->SetRelativeLocation(FVector(x + 50.0f, y, 0.0f));
+				}
+				if (walls & Cell::WALL_EAST) {
+					wallsub->SetRelativeLocation(FVector(x, y + 50.0f, 0.0f));
+				}
+				if (walls & Cell::WALL_SOUTH) {
+					wallsub->SetRelativeRotation(FQuat(FVector(0.0f, 0.0f, 1.0f), 90.0f));
+					wallsub->SetRelativeLocation(FVector(x - 50.0f, y, 0.0f));
+				}
+				if (walls & Cell::WALL_WEST) {
+					wallsub->SetRelativeLocation(FVector(x, y - 50.0f, 0.0f));
+				}
+			}
+
+			
+		}
+	}
 }
 
 

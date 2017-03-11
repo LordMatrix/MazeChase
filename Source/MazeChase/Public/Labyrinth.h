@@ -3,6 +3,7 @@
 #pragma once
 
 #include "GameFramework/Actor.h"
+#include "Components/ChildActorComponent.h"
 #include "Cell.h"
 #include <iostream>
 #include <stdlib.h>
@@ -32,11 +33,13 @@ public:
 
 	// Wall object
 	UPROPERTY(EditAnywhere, Category = Config)
-	TSubclassOf<AActor> wall;
-
+	TSubclassOf<AActor> wall_class_;
+	UChildActorComponent* wallsubs[30][30];
 	// Create constants (ROWS, COLS) to store the size of the maze.
 	static const int ROWS = 30;
 	static const int COLS = 30;
+
+	static const int WALL_SIZE = 100;
 
 private:
 	// Create a 2-D array ([ROWS][COLS]) of Cell objects.
