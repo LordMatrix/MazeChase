@@ -7,15 +7,17 @@
 ALabyrinth::ALabyrinth(){
 	PrimaryActorTick.bCanEverTick = true;
 
-	// Generate maze model
-	generateModel();
-	fill();
 }
 
 
 void ALabyrinth::OnConstruction(const FTransform& Transform) {
-	createWalls();
+	// Generate maze model
+	generateModel();
+	fill();
+
+	carveWalls();
 	createExit();
+	createPlayerStart();
 }
 
 
@@ -43,7 +45,7 @@ void ALabyrinth::rebuild() {
 
 	generateModel();
 	fill();
-	createWalls();
+	carveWalls();
 	createExit();
 }
 
@@ -176,7 +178,7 @@ void ALabyrinth::fill() {
 }
 
 
-void ALabyrinth::createWalls() {
+void ALabyrinth::carveWalls() {
 	/// Create labyrinth of static meshes from the generated model
 	for (int i = 0; i < ROWS; i++) {
 		for (int j = 0; j < COLS; j++) {
@@ -247,6 +249,19 @@ void ALabyrinth::createExit() {
 	FActorSpawnParameters spawn_info;
 	//Spawn exit mark
 	AActor* a = static_cast<AActor*>(GetWorld()->SpawnActor(exit_sign_, &location, &rotation, spawn_info));
+}
+
+
+void ALabyrinth::createPlayerStart() {
+	FActorSpawnParameters SpawnInfo;
+	SpawnInfo.bNoCollisionFail = true;
+	SpawnInfo.Owner = this;
+	SpawnInfo.Instigator = NULL;
+	SpawnInfo.bDeferConstruction = false;
+
+	FVector Loc(startX*WALL_SIZE, startY*WALL_SIZE, 10.0f);
+
+	GetWorld()->SpawnActor<APlayerStart>(APlayerStart::StaticClass(), Loc, FRotator::ZeroRotator, SpawnInfo);
 }
 
 

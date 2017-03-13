@@ -28,8 +28,9 @@ public:
 
 	void generateModel();
 	void fill();
-	void createWalls();
+	void carveWalls();
 	void createExit();
+	void createPlayerStart();
 	
 	Cell getCell(int x, int y);
 
