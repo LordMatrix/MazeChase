@@ -20,11 +20,16 @@ public:
 	ALabyrinth();
 
 	virtual void BeginPlay() override;
-	
+	virtual void OnConstruction(const FTransform& Transform) override;
 	virtual void Tick( float DeltaSeconds ) override;
 
-	void generate();
-	
+	UFUNCTION(BlueprintCallable, category = "Maze")
+	void rebuild();
+
+	void generateModel();
+	void fill();
+	void createWalls();
+	void createExit();
 	
 	Cell getCell(int x, int y);
 

@@ -8,87 +8,20 @@ ALabyrinth::ALabyrinth(){
 	PrimaryActorTick.bCanEverTick = true;
 
 	// Generate maze model
-	generate();
+	generateModel();
+	fill();
+}
 
-	for (int i = 0; i < ROWS; i++) {
-		for (int j = 0; j < COLS; j++) {
-			//WE CREATE 4 WALLS PER CELL.
-			for (int k = 0; k < 4; k++) {
-				FString name = "ChildWall_" + FString::FromInt(i) + "_" + FString::FromInt(j) + FString::FromInt(k);
-				wallsubs[i][j][k] = CreateDefaultSubobject<UStaticMeshComponent>(FName(*name));
-			}
-		}
-	}
+
+void ALabyrinth::OnConstruction(const FTransform& Transform) {
+	createWalls();
+	createExit();
 }
 
 
 void ALabyrinth::BeginPlay() {
 	Super::BeginPlay();
 
-	/// Create labyrinth of static meshes from the generated model
-	for (int i = 0; i < ROWS; i++) {
-		for (int j = 0; j < COLS; j++) {
-			int walls = getWallsAt(i, j);
-
-			 
-			for (int k = 0; k < 4; k++) {
-				if (walls & Cell::WALL_ALL) {
-					UStaticMeshComponent* wallsub = wallsubs[i][j][k];
-
-					wallsub->SetStaticMesh(wall_class_);
-					wallsub->SetRelativeScale3D(FVector(5.0f, 0.2f, 5.0f));
-
-					float x = i * WALL_SIZE;
-					float y = j * WALL_SIZE;
-
-					switch (k) {
-						case 0:
-							if (walls & Cell::WALL_NORTH) {
-								wallsub->SetRelativeRotation(FQuat(FVector(0.0f, 0.0f, 1.0f), 1.57f));
-								wallsub->SetRelativeLocation(FVector(x - (WALL_SIZE / 2.0f), y, 0.0f));
-							} else
-								wallsubs[i][j][k]->DestroyComponent();
-							break;
-						case 1:
-							if (walls & Cell::WALL_EAST) {
-								wallsub->SetRelativeLocation(FVector(x, y + (WALL_SIZE / 2.0f), 0.0f));
-							} else
-								wallsubs[i][j][k]->DestroyComponent();
-							break;
-						case 2:
-							if (walls & Cell::WALL_SOUTH) {
-								wallsub->SetRelativeRotation(FQuat(FVector(0.0f, 0.0f, 1.0f), 1.57f));
-								wallsub->SetRelativeLocation(FVector(x + (WALL_SIZE / 2.0f), y, 0.0f));
-							}
-							else
-								wallsubs[i][j][k]->DestroyComponent();
-							break;
-						case 3:
-							if (walls & Cell::WALL_WEST) {
-								wallsub->SetRelativeLocation(FVector(x, y - (WALL_SIZE / 2.0f), 0.0f));
-							} else
-								wallsubs[i][j][k]->DestroyComponent();
-							break;
-					}
-				} else {
-				//If there are no walls, destroy this child actor
-					wallsubs[i][j][k]->DestroyComponent();
-				}
-			}	
-		}
-	}
-
-
-	/// Open and place a mark on the exit
-	for (int k = 0; k < 4; k++) {
-		wallsubs[exitX][exitY][k]->DestroyComponent();
-	}
-
-	FVector location(exitX*WALL_SIZE, exitY*WALL_SIZE, 0.0f);
-	FRotator rotation(0.0f, 0.0f, 0.0f);
-	FActorSpawnParameters spawn_info;
-	//Spawn exit mark
-	AActor* a = static_cast<AActor*>(GetWorld()->SpawnActor(exit_sign_, &location, &rotation, spawn_info));
 }
 
 
@@ -96,7 +29,26 @@ void ALabyrinth::Tick( float DeltaTime ){
 	Super::Tick( DeltaTime );
 }
 
-void ALabyrinth::generate() {
+
+void ALabyrinth::rebuild() {
+	//Tear down all walls
+	for (int i = 0; i < ROWS; i++) {
+		for (int j = 0; j < COLS; j++) {
+			for (int k = 0; k < 4; k++) {
+				if (IsValid(wallsubs[i][j][k]))
+					wallsubs[i][j][k]->DestroyComponent();
+			}
+		}
+	}
+
+	generateModel();
+	fill();
+	createWalls();
+	createExit();
+}
+
+
+void ALabyrinth::generateModel() {
 	using std::cout;
 	using std::vector;
 
@@ -207,6 +159,94 @@ void ALabyrinth::generate() {
 			}
 		}
 	}
+}
+
+
+void ALabyrinth::fill() {
+	for (int i = 0; i < ROWS; i++) {
+		for (int j = 0; j < COLS; j++) {
+			//WE CREATE 4 WALLS PER CELL.
+			for (int k = 0; k < 4; k++) {
+				FString name = "ChildWall_" + FString::FromInt(i) + "_" + FString::FromInt(j) + FString::FromInt(k);
+				//wallsubs[i][j][k] = CreateDefaultSubobject<UStaticMeshComponent>(FName(*name));
+				wallsubs[i][j][k] = ConstructObject<UStaticMeshComponent>(UStaticMeshComponent::StaticClass(), this, FName(*name));
+			}
+		}
+	}
+}
+
+
+void ALabyrinth::createWalls() {
+	/// Create labyrinth of static meshes from the generated model
+	for (int i = 0; i < ROWS; i++) {
+		for (int j = 0; j < COLS; j++) {
+			int walls = getWallsAt(i, j);
+
+
+			for (int k = 0; k < 4; k++) {
+				if (walls & Cell::WALL_ALL) {
+					UStaticMeshComponent* wallsub = wallsubs[i][j][k];
+
+					wallsub->SetStaticMesh(wall_class_);
+					wallsub->SetRelativeScale3D(FVector(5.0f, 0.2f, 5.0f));
+
+					float x = i * WALL_SIZE;
+					float y = j * WALL_SIZE;
+
+					switch (k) {
+					case 0:
+						if (walls & Cell::WALL_NORTH) {
+							wallsub->SetRelativeRotation(FQuat(FVector(0.0f, 0.0f, 1.0f), 1.57f));
+							wallsub->SetRelativeLocation(FVector(x - (WALL_SIZE / 2.0f), y, 0.0f));
+						}
+						else
+							wallsubs[i][j][k]->DestroyComponent();
+						break;
+					case 1:
+						if (walls & Cell::WALL_EAST) {
+							wallsub->SetRelativeLocation(FVector(x, y + (WALL_SIZE / 2.0f), 0.0f));
+						}
+						else
+							wallsubs[i][j][k]->DestroyComponent();
+						break;
+					case 2:
+						if (walls & Cell::WALL_SOUTH) {
+							wallsub->SetRelativeRotation(FQuat(FVector(0.0f, 0.0f, 1.0f), 1.57f));
+							wallsub->SetRelativeLocation(FVector(x + (WALL_SIZE / 2.0f), y, 0.0f));
+						}
+						else
+							wallsubs[i][j][k]->DestroyComponent();
+						break;
+					case 3:
+						if (walls & Cell::WALL_WEST) {
+							wallsub->SetRelativeLocation(FVector(x, y - (WALL_SIZE / 2.0f), 0.0f));
+						}
+						else
+							wallsubs[i][j][k]->DestroyComponent();
+						break;
+					}
+				}
+				else {
+					//If there are no walls, destroy this child actor
+					wallsubs[i][j][k]->DestroyComponent();
+				}
+			}
+		}
+	}
+}
+
+
+void ALabyrinth::createExit() {
+	/// Open and place a mark on the exit
+	for (int k = 0; k < 4; k++) {
+		if (IsValid(wallsubs[exitX][exitY][k]))
+			wallsubs[exitX][exitY][k]->DestroyComponent();
+	}
+	FVector location(exitX*WALL_SIZE, exitY*WALL_SIZE, 0.0f);
+	FRotator rotation(0.0f, 0.0f, 0.0f);
+	FActorSpawnParameters spawn_info;
+	//Spawn exit mark
+	AActor* a = static_cast<AActor*>(GetWorld()->SpawnActor(exit_sign_, &location, &rotation, spawn_info));
 }
 
 

@@ -1,0 +1,22 @@
+OBLIGATORIO
+---------------------------------
+
+Menú ppal
+Menú de pausa
+Minotauro con patrullas MinotaurStartNode
+Minotauro persigue a jugador al verlo
+Minotauro vuelve a patrulla si 10-15 segundos tras ver al player
+Muerte del jugador al tocar al Minotauro
+Pantalla de game over con tiempo sobrevivido
+Reinicio del juego (volver a main menu)
+Velocidades del jugador: sigilo, andar y correr
+botones y puertas
+permitir mute sound
+Sonidos: andar/correr personaje, sonido de cascos para minotauro y resoplidos, botones/puertas
+
+
+M&D
+---------------------------------
+
+Minotauro detecta por sonido
+Personaje puede gritar, lo que atrae al minotauro y merodea durante 5 segundos
