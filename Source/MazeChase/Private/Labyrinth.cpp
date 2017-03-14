@@ -23,25 +23,19 @@ void ALabyrinth::OnConstruction(const FTransform& Transform) {
 
 void ALabyrinth::BeginPlay() {
 	Super::BeginPlay();
-
+	spawnMinotaur();
 }
 
 
 void ALabyrinth::Tick( float DeltaTime ){
 	Super::Tick( DeltaTime );
+
+	//if ((int)GetWorld()->GetTimeSeconds() % 5 == 0)
+		//rebuild();
 }
 
 
 void ALabyrinth::rebuild() {
-	//Tear down all walls
-	for (int i = 0; i < ROWS; i++) {
-		for (int j = 0; j < COLS; j++) {
-			for (int k = 0; k < 4; k++) {
-				if (IsValid(wallsubs[i][j][k]))
-					wallsubs[i][j][k]->DestroyComponent();
-			}
-		}
-	}
 
 	generateModel();
 	fill();
@@ -76,8 +70,8 @@ void ALabyrinth::generateModel() {
 	int curY = rand() % COLS;
 
 	//Set starting position
-	startX = curX;
-	startY = curY;
+	hero_startX = curX;
+	hero_startY = curY;
 
 	// Create a vector of Cell objects named trail which will be used as a stack.
 	vector<Cell> trail;
@@ -259,9 +253,20 @@ void ALabyrinth::createPlayerStart() {
 	SpawnInfo.Instigator = NULL;
 	SpawnInfo.bDeferConstruction = false;
 
-	FVector Loc(startX*WALL_SIZE, startY*WALL_SIZE, 10.0f);
+	FVector Loc(hero_startX*WALL_SIZE, hero_startY*WALL_SIZE, 10.0f);
 
 	GetWorld()->SpawnActor<APlayerStart>(APlayerStart::StaticClass(), Loc, FRotator::ZeroRotator, SpawnInfo);
+}
+
+
+void ALabyrinth::spawnMinotaur() {
+	minotaur_startX = minotaur_startY = 10;
+
+	FVector location(minotaur_startX*WALL_SIZE, minotaur_startY*WALL_SIZE, 0.0f);
+	FRotator rotation(0.0f, 0.0f, 0.0f);
+	FActorSpawnParameters spawn_info;
+	//Spawn minotaur
+	AMinotaur* minos = static_cast<AMinotaur*>(GetWorld()->SpawnActor(minotaur_class_, &location, &rotation, spawn_info));
 }
 
 

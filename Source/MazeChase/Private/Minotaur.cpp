@@ -1,35 +1,46 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #include "MazeChase.h"
 #include "Minotaur.h"
 
 
 // Sets default values
-AMinotaur::AMinotaur()
-{
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+AMinotaur::AMinotaur() {
 	PrimaryActorTick.bCanEverTick = true;
-
+	status_ = kIdle;
 }
 
-// Called when the game starts or when spawned
-void AMinotaur::BeginPlay()
-{
+
+void AMinotaur::BeginPlay() {
 	Super::BeginPlay();
-	
 }
 
-// Called every frame
-void AMinotaur::Tick( float DeltaTime )
-{
+
+void AMinotaur::Tick( float DeltaTime ) {
 	Super::Tick( DeltaTime );
-
+	updateFSM();
 }
 
-// Called to bind functionality to input
-void AMinotaur::SetupPlayerInputComponent(class UInputComponent* InputComponent)
-{
+
+void AMinotaur::SetupPlayerInputComponent(class UInputComponent* InputComponent) {
 	Super::SetupPlayerInputComponent(InputComponent);
+}
+
+
+void AMinotaur::senseEnvironment() {
 
 }
 
+
+void AMinotaur::updateFSM() {
+	switch (status_) {
+		case kIdle:
+			break;
+		case kPatrolling:
+			break;
+		case kRoaring:
+			break;
+		case kCharging:
+			break;
+		case kChasing:
+			break;
+	}
+}

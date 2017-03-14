@@ -5,6 +5,7 @@
 #include "GameFramework/Actor.h"
 #include "Components/ChildActorComponent.h"
 #include "Cell.h"
+#include "Minotaur.h"
 #include <iostream>
 #include <stdlib.h>
 #include <time.h>
@@ -31,7 +32,8 @@ public:
 	void carveWalls();
 	void createExit();
 	void createPlayerStart();
-	
+	void spawnMinotaur();
+
 	Cell getCell(int x, int y);
 
 	UFUNCTION(BlueprintCallable, category = "Maze")
@@ -46,6 +48,8 @@ public:
 		UStaticMesh* wall_class_;
 	UPROPERTY(EditAnywhere, Category = Config)
 		TSubclassOf<AActor> exit_sign_;
+	UPROPERTY(EditAnywhere, Category = Config)
+		TSubclassOf<AMinotaur> minotaur_class_;
 
 	//Wall child actors
 	UStaticMeshComponent* wallsubs[ROWS][COLS][4];
@@ -56,8 +60,11 @@ private:
 	// Create a 2-D array ([ROWS][COLS]) of Cell objects.
 	Cell maze_[ROWS][COLS];
 
-	//Starting position
-	int startX, startY;
+	//Player starting position
+	int hero_startX, hero_startY;
+
+	//Minotaur starting position
+	int minotaur_startX, minotaur_startY;
 
 	//Exit position
 	int exitX, exitY;
