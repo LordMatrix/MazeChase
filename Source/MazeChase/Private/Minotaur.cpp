@@ -6,6 +6,7 @@
 AMinotaur::AMinotaur() {
 	PrimaryActorTick.bCanEverTick = true;
 	status_ = kIdle;
+	currentPatrolPoint = -1;
 }
 
 
@@ -43,4 +44,22 @@ void AMinotaur::updateFSM() {
 		case kChasing:
 			break;
 	}
+}
+
+
+AActor* AMinotaur::GetNextPatrolPoint() {
+
+	//AActor * TmpTarget = patrolList[currentPatrolPoint];
+
+	if (currentPatrolPoint >= patrolList.Num() - 1) {
+
+		currentPatrolPoint = 0;
+	}
+	else {
+		currentPatrolPoint++;
+	}
+
+
+	return patrolList[currentPatrolPoint];
+
 }

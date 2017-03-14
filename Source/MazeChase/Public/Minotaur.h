@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GameFramework/Character.h"
+#include "BehaviorTree/BehaviorTree.h"
 #include "Minotaur.generated.h"
 
 UCLASS()
@@ -26,4 +27,20 @@ public:
 	} Status;
 
 	Status status_;
+
+
+
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Behavior")
+		TArray<AActor*> patrolList;
+
+	UFUNCTION()
+		AActor* GetNextPatrolPoint();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Behavior")
+		UBehaviorTree * MyBehavior;
+
+	UPROPERTY()
+		int currentPatrolPoint;
 };

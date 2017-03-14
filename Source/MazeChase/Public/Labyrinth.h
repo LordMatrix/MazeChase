@@ -68,4 +68,7 @@ private:
 
 	//Exit position
 	int exitX, exitY;
+
+	//A Reference to the minotaur
+	AMinotaur* minos_;
 };

@@ -7,5 +7,6 @@ public class MazeChase : ModuleRules
 	public MazeChase(TargetInfo Target)
 	{
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay" });
-	}
+        PrivateDependencyModuleNames.AddRange(new string[] { "AIModule", "GameplayTasks" });
+    }
 }

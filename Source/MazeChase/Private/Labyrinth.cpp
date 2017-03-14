@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "MazeChase.h"
+#include "Engine/TargetPoint.h"
 #include "Labyrinth.h"
 
 // Sets default values
@@ -17,13 +18,26 @@ void ALabyrinth::OnConstruction(const FTransform& Transform) {
 
 	carveWalls();
 	createExit();
-	createPlayerStart();
+	createPlayerStart();	
 }
 
 
 void ALabyrinth::BeginPlay() {
 	Super::BeginPlay();
 	spawnMinotaur();
+
+	//Spawn patrol points
+	for (int i = 0; i < 3; i++) {
+		int x = rand() % ROWS;
+		int y = rand() % COLS;
+
+		FVector location(x * WALL_SIZE, y * WALL_SIZE, 0.0f);
+		FRotator rotation(0.0f, 0.0f, 0.0f);
+		FActorSpawnParameters spawn_info;
+		//Spawn actor
+		ATargetPoint* point = static_cast<ATargetPoint*>(GetWorld()->SpawnActor(ATargetPoint::StaticClass(), &location, &rotation, spawn_info));
+		minos_->patrolList.Push(point);
+	}
 }
 
 
@@ -266,7 +280,7 @@ void ALabyrinth::spawnMinotaur() {
 	FRotator rotation(0.0f, 0.0f, 0.0f);
 	FActorSpawnParameters spawn_info;
 	//Spawn minotaur
-	AMinotaur* minos = static_cast<AMinotaur*>(GetWorld()->SpawnActor(minotaur_class_, &location, &rotation, spawn_info));
+	minos_ = static_cast<AMinotaur*>(GetWorld()->SpawnActor(minotaur_class_, &location, &rotation, spawn_info));
 }
 
 
