@@ -43,4 +43,7 @@ public:
 
 	UPROPERTY()
 		int currentPatrolPoint;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Behavior")
+		AActor* player_ref_;
 };
