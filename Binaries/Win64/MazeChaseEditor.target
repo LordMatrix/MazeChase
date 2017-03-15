@@ -2,7 +2,7 @@
 	"TargetName" : "MazeChaseEditor",
 	"Platform" : "Win64",
 	"Configuration" : "Development",
-	"BuildId" : "81cf4799-44c8-4388-8194-225f9a049bb9",
+	"BuildId" : "",
 	"Version" : 
 	{
 		"MajorVersion" : 4,
@@ -14,6 +14,42 @@
 	},
 	"BuildProducts" :
 	[
+		{
+			"Path" : "$(ProjectDir)/Plugins/FMODStudio/Binaries/Win64/UE4Editor-FMODStudioOculus.dll",
+			"Type" : "DynamicLibrary"
+		},
+		{
+			"Path" : "$(ProjectDir)/Plugins/FMODStudio/Binaries/Win64/UE4Editor-FMODStudioOculus.pdb",
+			"Type" : "SymbolFile"
+		},
+		{
+			"Path" : "$(ProjectDir)/Plugins/FMODStudio/Intermediate/Build/Win64/UE4Editor/Development/UE4Editor-FMODStudioOculus.lib",
+			"Type" : "ImportLibrary"
+		},
+		{
+			"Path" : "$(ProjectDir)/Plugins/FMODStudio/Binaries/Win64/UE4Editor-FMODStudio.dll",
+			"Type" : "DynamicLibrary"
+		},
+		{
+			"Path" : "$(ProjectDir)/Plugins/FMODStudio/Binaries/Win64/UE4Editor-FMODStudio.pdb",
+			"Type" : "SymbolFile"
+		},
+		{
+			"Path" : "$(ProjectDir)/Plugins/FMODStudio/Intermediate/Build/Win64/UE4Editor/Development/UE4Editor-FMODStudio.lib",
+			"Type" : "ImportLibrary"
+		},
+		{
+			"Path" : "$(ProjectDir)/Plugins/FMODStudio/Binaries/Win64/UE4Editor-FMODStudioEditor.dll",
+			"Type" : "DynamicLibrary"
+		},
+		{
+			"Path" : "$(ProjectDir)/Plugins/FMODStudio/Binaries/Win64/UE4Editor-FMODStudioEditor.pdb",
+			"Type" : "SymbolFile"
+		},
+		{
+			"Path" : "$(ProjectDir)/Plugins/FMODStudio/Intermediate/Build/Win64/UE4Editor/Development/UE4Editor-FMODStudioEditor.lib",
+			"Type" : "ImportLibrary"
+		},
 		{
 			"Path" : "$(ProjectDir)/Binaries/Win64/UE4Editor-MazeChase.dll",
 			"Type" : "DynamicLibrary"
@@ -31,6 +67,10 @@
 	[
 		{
 			"Path" : "$(ProjectDir)/MazeChase.uproject",
+			"Type" : "UFS"
+		},
+		{
+			"Path" : "$(ProjectDir)/Plugins/FMODStudio/FMODStudio.uplugin",
 			"Type" : "UFS"
 		},
 		{
@@ -196,6 +236,14 @@
 		{
 			"Path" : "$(ProjectDir)/Content/Slate/...",
 			"Type" : "UFS"
+		},
+		{
+			"Path" : "$(ProjectDir)/Plugins/FMODStudio/Binaries/Win64/fmodL64.dll",
+			"Type" : "NonUFS"
+		},
+		{
+			"Path" : "$(ProjectDir)/Plugins/FMODStudio/Binaries/Win64/fmodstudioL64.dll",
+			"Type" : "NonUFS"
 		}
 	]
 }

@@ -64,7 +64,7 @@ void ALabyrinth::generateModel() {
 
 	// Create an enum named DIR to keep track of the four directions (NORTH, EAST, SOUTH, WEST)
 	enum DIR { NORTH, SOUTH, EAST, WEST };
-
+	
 	// Randomize the random number function.
 	srand(time(NULL));
 

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.01.08.00">
+    <object class="AudioFile" id="{01cab68c-a4cd-4030-8605-7910fffaa36d}">
+        <property name="assetPath">
+            <value>roar1.wav</value>
+        </property>
+        <property name="frequencyInKHz">
+            <value>44.0999985</value>
+        </property>
+        <property name="channelCount">
+            <value>1</value>
+        </property>
+        <property name="length">
+            <value>2.4118820861678003</value>
+        </property>
+        <relationship name="masterAssetFolder">
+            <destination>{af93a3b2-df10-4a1c-9520-9a67dfe15849}</destination>
+        </relationship>
+    </object>
+</objects>

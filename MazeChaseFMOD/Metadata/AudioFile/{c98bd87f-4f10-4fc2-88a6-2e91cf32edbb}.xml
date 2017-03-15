@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.01.08.00">
+    <object class="AudioFile" id="{c98bd87f-4f10-4fc2-88a6-2e91cf32edbb}">
+        <property name="assetPath">
+            <value>howl.wav</value>
+        </property>
+        <property name="frequencyInKHz">
+            <value>44.0999985</value>
+        </property>
+        <property name="channelCount">
+            <value>1</value>
+        </property>
+        <property name="length">
+            <value>1.1839002267573697</value>
+        </property>
+        <relationship name="masterAssetFolder">
+            <destination>{af93a3b2-df10-4a1c-9520-9a67dfe15849}</destination>
+        </relationship>
+    </object>
+</objects>
