@@ -3,6 +3,6 @@
 #ifndef __MAZECHASE_H__
 #define __MAZECHASE_H__
 
-#include "EngineMinimal.h"
+#include "Engine.h"
 
 #endif

@@ -31,6 +31,7 @@ public:
 	void fill();
 	void carveWalls();
 	void createExit();
+	void createDoors();
 	void createPlayerStart();
 	void spawnMinotaur();
 
@@ -48,6 +49,8 @@ public:
 		UStaticMesh* wall_class_;
 	UPROPERTY(EditAnywhere, Category = Config)
 		TSubclassOf<AActor> exit_sign_;
+	UPROPERTY(EditAnywhere, Category = Config)
+		TSubclassOf<AActor> door_class_;
 	UPROPERTY(EditAnywhere, Category = Config)
 		TSubclassOf<AMinotaur> minotaur_class_;
 

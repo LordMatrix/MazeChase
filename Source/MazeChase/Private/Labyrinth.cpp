@@ -18,6 +18,7 @@ void ALabyrinth::OnConstruction(const FTransform& Transform) {
 
 	carveWalls();
 	createExit();
+	createDoors();
 	createPlayerStart();	
 }
 
@@ -55,6 +56,7 @@ void ALabyrinth::rebuild() {
 	fill();
 	carveWalls();
 	createExit();
+	createDoors();
 }
 
 
@@ -256,7 +258,16 @@ void ALabyrinth::createExit() {
 	FRotator rotation(0.0f, 0.0f, 0.0f);
 	FActorSpawnParameters spawn_info;
 	//Spawn exit mark
-	AActor* a = static_cast<AActor*>(GetWorld()->SpawnActor(exit_sign_, &location, &rotation, spawn_info));
+	AActor* exit = static_cast<AActor*>(GetWorld()->SpawnActor(exit_sign_, &location, &rotation, spawn_info));
+}
+
+
+void ALabyrinth::createDoors() {
+	FVector location(hero_startX*WALL_SIZE, hero_startY*WALL_SIZE, 0.0f);
+	FRotator rotation(0.0f, 0.0f, 0.0f);
+	FActorSpawnParameters spawn_info;
+	//Spawn door
+	AActor* door = static_cast<AActor*>(GetWorld()->SpawnActor(door_class_, &location, &rotation, spawn_info));
 }
 
 

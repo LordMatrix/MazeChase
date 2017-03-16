@@ -2,6 +2,9 @@
 
 #include "MazeChase.h"
 #include "Kismet/HeadMountedDisplayFunctionLibrary.h"
+
+#include "DrawDebugHelpers.h"
+
 #include "MazeChaseCharacter.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -40,6 +43,26 @@ AMazeChaseCharacter::AMazeChaseCharacter()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
+}
+
+
+void AMazeChaseCharacter::Tick(float DeltaTime) {
+	Super::Tick(DeltaTime);
+
+	// Raycast looking for doors
+	FHitResult out;
+	FVector ray_start = this->GetActorLocation();
+	FVector frwd = this->GetActorForwardVector();
+	FVector ray_end = ray_start + frwd*100.0f;
+	GetWorld()->LineTraceSingleByChannel(out, ray_start, ray_end, ECollisionChannel::ECC_Visibility);
+
+	DrawDebugLine(GetWorld(), ray_start, ray_end, FColor::Red);
+
+	if (out.bBlockingHit && out.GetActor()->GetName().Contains("BP_Door")) {
+		door_ = out.GetActor();
+	} else {
+		door_ = nullptr;
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
