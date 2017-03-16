@@ -59,7 +59,7 @@ void AMazeChaseCharacter::Tick(float DeltaTime) {
 	DrawDebugLine(GetWorld(), ray_start, ray_end, FColor::Red);
 
 	if (out.bBlockingHit && out.GetActor()->GetName().Contains("BP_Door")) {
-		door_ = out.GetActor();
+		door_ = Cast<ADoor>(out.GetActor());
 	} else {
 		door_ = nullptr;
 	}
@@ -92,6 +92,26 @@ void AMazeChaseCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 
 	// VR headset functionality
 	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &AMazeChaseCharacter::OnResetVR);
+
+	//Me-defined actions
+	PlayerInputComponent->BindAction("Fly", IE_Pressed, this, &AMazeChaseCharacter::OnInteractInputPressed);
+	PlayerInputComponent->BindAction("Fly", IE_Released, this, &AMazeChaseCharacter::OnInteractInputReleased);
+}
+
+
+void AMazeChaseCharacter::OnInteractInputPressed() {
+	if (IsValid(door_)) {
+		door_->disable();
+		FTimerHandle door_handle;
+		GetWorld()->GetTimerManager().SetTimer(door_handle, door_, &ADoor::enable, 2.0f, false);
+	} else {
+		GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
+	}
+}
+
+
+void AMazeChaseCharacter::OnInteractInputReleased() {
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 }
 
 

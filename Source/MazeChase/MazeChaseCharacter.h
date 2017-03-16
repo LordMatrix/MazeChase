@@ -1,6 +1,7 @@
 // Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
 #pragma once
 #include "GameFramework/Character.h"
+#include "Public/Door.h"
 #include "MazeChaseCharacter.generated.h"
 
 UCLASS(config=Game)
@@ -29,9 +30,13 @@ public:
 	float BaseLookUpRate;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = References)
-		AActor* door_;
+		ADoor* door_;
 
 protected:
+
+	//Custom callbacks
+	void OnInteractInputPressed();
+	void OnInteractInputReleased();
 
 	/** Resets HMD orientation in VR. */
 	void OnResetVR();
