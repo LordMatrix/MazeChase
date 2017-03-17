@@ -263,7 +263,7 @@ void ALabyrinth::createExit() {
 
 
 void ALabyrinth::createDoors() {
-	int num_doors = 5;
+	int num_doors = 20;
 
 	for (int i = 0; i < num_doors; i++) {
 		int x = rand() % ROWS;
@@ -271,7 +271,6 @@ void ALabyrinth::createDoors() {
 
 		int walls = this->getWallsAt(x, y);
 		if (walls == Cell::WALL_ALL) {
-			i--;
 			continue;
 		} else {
 			FVector location(x*WALL_SIZE, y*WALL_SIZE, 0.0f);
@@ -284,19 +283,16 @@ void ALabyrinth::createDoors() {
 			x *= WALL_SIZE;
 			y *= WALL_SIZE;
 
-			if (walls & Cell::WALL_NORTH) {
+			if (!(walls & Cell::WALL_NORTH)) {
 				door->SetActorRelativeLocation(FVector(x-(WALL_SIZE / 2.0f), y, 0.0f));
-			}
-			if (walls & Cell::WALL_EAST) {
 				door->SetActorRelativeRotation(FQuat(FVector(0.0f, 0.0f, 1.0f), 1.57f));
-				door->SetActorRelativeLocation(FVector(x, y-(WALL_SIZE / 2.0f), 0.0f));
-			}
-			if (walls & Cell::WALL_SOUTH) {
-				door->SetActorRelativeLocation(FVector(x+(WALL_SIZE / 2.0f), y, 0.0f));
-			}
-			if (walls & Cell::WALL_WEST) {
-				door->SetActorRelativeRotation(FQuat(FVector(0.0f, 0.0f, 1.0f), 1.57f));
+			} else if (!(walls & Cell::WALL_EAST)) {
 				door->SetActorRelativeLocation(FVector(x, y+(WALL_SIZE / 2.0f), 0.0f));
+			} else if (!(walls & Cell::WALL_SOUTH)) {
+				door->SetActorRelativeLocation(FVector(x + (WALL_SIZE / 2.0f), y, 0.0f));
+				door->SetActorRelativeRotation(FQuat(FVector(0.0f, 0.0f, 1.0f), 1.57f));
+			} else if (!(walls & Cell::WALL_WEST)) {
+				door->SetActorRelativeLocation(FVector(x, y-(WALL_SIZE / 2.0f), 0.0f));
 			}
 		}
 	}
