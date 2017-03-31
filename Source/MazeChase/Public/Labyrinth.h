@@ -46,7 +46,7 @@ public:
 
 	// Wall object
 	UPROPERTY(EditAnywhere, Category = Config)
-		UStaticMesh* wall_class_;
+		TSubclassOf<AActor> wall_class_;
 	UPROPERTY(EditAnywhere, Category = Config)
 		TSubclassOf<AActor> exit_sign_;
 	UPROPERTY(EditAnywhere, Category = Config)
@@ -55,7 +55,7 @@ public:
 		TSubclassOf<AMinotaur> minotaur_class_;
 
 	//Wall child actors
-	UStaticMeshComponent* wall_children_meshes_[ROWS][COLS][4];
+	AActor* wall_children_meshes_[ROWS][COLS][4];
 
 	static const int WALL_SIZE = 500;
 

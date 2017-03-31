@@ -182,13 +182,21 @@ void ALabyrinth::raiseWalls() {
 				//Create maze's children objects (wall meshes)
 				FString name = "ChildWall_" + FString::FromInt(i) + "_" + FString::FromInt(j) + FString::FromInt(k);
 				
+
+				FVector location(i*WALL_SIZE, j*WALL_SIZE, 0.0f);
+				FRotator rotation(0.0f, 0.0f, 0.0f);
+				FActorSpawnParameters spawn_info;
+				//Spawn exit mark
+				wall_children_meshes_[i][j][k] = static_cast<AActor*>(GetWorld()->SpawnActor(wall_class_, &location, &rotation, spawn_info));
+
+
 				//wall_children_meshes_[i][j][k] = CreateDefaultSubobject<UStaticMeshComponent>(FName(*name));
-				wall_children_meshes_[i][j][k] = ConstructObject<UStaticMeshComponent>(UStaticMeshComponent::StaticClass(), this, FName(*name));
-				UStaticMeshComponent* wallsub = wall_children_meshes_[i][j][k];
+				//wall_children_meshes_[i][j][k] = ConstructObject<UStaticMeshComponent>(UStaticMeshComponent::StaticClass(), this, FName(*name));
+				AActor* wallsub = wall_children_meshes_[i][j][k];
 
 				//Assign a mesh class to the child mesh component
-				wallsub->SetStaticMesh(wall_class_);
-				wallsub->SetRelativeScale3D(FVector(5.0f, 0.2f, 5.0f));
+				//wallsub->SetStaticMesh(wall_class_);
+				wallsub->SetActorScale3D(FVector(5.0f, 0.2f, 5.0f));
 
 				//Reposition every wall to form a matrix of walls
 				float x = i * WALL_SIZE;
@@ -197,18 +205,18 @@ void ALabyrinth::raiseWalls() {
 				//Move the wall from the center of the matrix's cell to its proper location&rotation
 				switch (k) {
 				case 0:
-					wallsub->SetRelativeRotation(FQuat(FVector(0.0f, 0.0f, 1.0f), 1.57f));
-					wallsub->SetRelativeLocation(FVector(x - (WALL_SIZE / 2.0f), y, 0.0f));
+					wallsub->SetActorRelativeRotation(FQuat(FVector(0.0f, 0.0f, 1.0f), 1.57f));
+					wallsub->SetActorRelativeLocation(FVector(x - (WALL_SIZE / 2.0f), y, 0.0f));
 					break;
 				case 1:
-					wallsub->SetRelativeLocation(FVector(x, y + (WALL_SIZE / 2.0f), 0.0f));
+					wallsub->SetActorRelativeLocation(FVector(x, y + (WALL_SIZE / 2.0f), 0.0f));
 					break;
 				case 2:
-					wallsub->SetRelativeRotation(FQuat(FVector(0.0f, 0.0f, 1.0f), 1.57f));
-					wallsub->SetRelativeLocation(FVector(x + (WALL_SIZE / 2.0f), y, 0.0f));
+					wallsub->SetActorRelativeRotation(FQuat(FVector(0.0f, 0.0f, 1.0f), 1.57f));
+					wallsub->SetActorRelativeLocation(FVector(x + (WALL_SIZE / 2.0f), y, 0.0f));
 					break;
 				case 3:
-					wallsub->SetRelativeLocation(FVector(x, y - (WALL_SIZE / 2.0f), 0.0f));
+					wallsub->SetActorRelativeLocation(FVector(x, y - (WALL_SIZE / 2.0f), 0.0f));
 					break;
 				}
 			}
@@ -226,7 +234,7 @@ void ALabyrinth::carveWalls() {
 
 			for (int k = 0; k < 4; k++) {
 				if (walls & Cell::WALL_ALL) {
-					UStaticMeshComponent* wallsub = wall_children_meshes_[i][j][k];
+					AActor* wallsub = wall_children_meshes_[i][j][k];
 
 
 
@@ -236,34 +244,34 @@ void ALabyrinth::carveWalls() {
 
 						}
 						else
-							wall_children_meshes_[i][j][k]->DestroyComponent();
+							wall_children_meshes_[i][j][k]->Destroy();
 						break;
 					case 1:
 						if (walls & Cell::WALL_EAST) {
 
 						}
 						else
-							wall_children_meshes_[i][j][k]->DestroyComponent();
+							wall_children_meshes_[i][j][k]->Destroy();
 						break;
 					case 2:
 						if (walls & Cell::WALL_SOUTH) {
 
 						}
 						else
-							wall_children_meshes_[i][j][k]->DestroyComponent();
+							wall_children_meshes_[i][j][k]->Destroy();
 						break;
 					case 3:
 						if (walls & Cell::WALL_WEST) {
 
 						}
 						else
-							wall_children_meshes_[i][j][k]->DestroyComponent();
+							wall_children_meshes_[i][j][k]->Destroy();
 						break;
 					}
 				}
 				else {
 					//If there are no walls, destroy this child actor
-					wall_children_meshes_[i][j][k]->DestroyComponent();
+					wall_children_meshes_[i][j][k]->Destroy();
 				}
 			}
 		}
@@ -275,7 +283,7 @@ void ALabyrinth::createExit() {
 	/// Open and place a mark on the exit
 	for (int k = 0; k < 4; k++) {
 		if (IsValid(wall_children_meshes_[exitX][exitY][k]))
-			wall_children_meshes_[exitX][exitY][k]->DestroyComponent();
+			wall_children_meshes_[exitX][exitY][k]->Destroy();
 	}
 	FVector location(exitX*WALL_SIZE, exitY*WALL_SIZE, 0.0f);
 	FRotator rotation(0.0f, 0.0f, 0.0f);
