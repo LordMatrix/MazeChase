@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #include "MazeChase.h"
 #include "Engine/TargetPoint.h"
 #include "Labyrinth.h"
@@ -12,9 +10,10 @@ ALabyrinth::ALabyrinth(){
 
 
 void ALabyrinth::OnConstruction(const FTransform& Transform) {
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, "CONSTRUCTING MAZE");
 	// Generate maze model
 	generateModel();
-	fill();
+	raiseWalls();
 
 	carveWalls();
 	createExit();
@@ -53,7 +52,7 @@ void ALabyrinth::Tick( float DeltaTime ){
 void ALabyrinth::rebuild() {
 
 	generateModel();
-	fill();
+	raiseWalls();
 	carveWalls();
 	createExit();
 	createDoors();
@@ -174,14 +173,44 @@ void ALabyrinth::generateModel() {
 }
 
 
-void ALabyrinth::fill() {
+/// Creates cells of walls all along the maze
+void ALabyrinth::raiseWalls() {
 	for (int i = 0; i < ROWS; i++) {
 		for (int j = 0; j < COLS; j++) {
 			//WE CREATE 4 WALLS PER CELL.
 			for (int k = 0; k < 4; k++) {
+				//Create maze's children objects (wall meshes)
 				FString name = "ChildWall_" + FString::FromInt(i) + "_" + FString::FromInt(j) + FString::FromInt(k);
-				//wallsubs[i][j][k] = CreateDefaultSubobject<UStaticMeshComponent>(FName(*name));
-				wallsubs[i][j][k] = ConstructObject<UStaticMeshComponent>(UStaticMeshComponent::StaticClass(), this, FName(*name));
+				
+				//wall_children_meshes_[i][j][k] = CreateDefaultSubobject<UStaticMeshComponent>(FName(*name));
+				wall_children_meshes_[i][j][k] = ConstructObject<UStaticMeshComponent>(UStaticMeshComponent::StaticClass(), this, FName(*name));
+				UStaticMeshComponent* wallsub = wall_children_meshes_[i][j][k];
+
+				//Assign a mesh class to the child mesh component
+				wallsub->SetStaticMesh(wall_class_);
+				wallsub->SetRelativeScale3D(FVector(5.0f, 0.2f, 5.0f));
+
+				//Reposition every wall to form a matrix of walls
+				float x = i * WALL_SIZE;
+				float y = j * WALL_SIZE;
+
+				//Move the wall from the center of the matrix's cell to its proper location&rotation
+				switch (k) {
+				case 0:
+					wallsub->SetRelativeRotation(FQuat(FVector(0.0f, 0.0f, 1.0f), 1.57f));
+					wallsub->SetRelativeLocation(FVector(x - (WALL_SIZE / 2.0f), y, 0.0f));
+					break;
+				case 1:
+					wallsub->SetRelativeLocation(FVector(x, y + (WALL_SIZE / 2.0f), 0.0f));
+					break;
+				case 2:
+					wallsub->SetRelativeRotation(FQuat(FVector(0.0f, 0.0f, 1.0f), 1.57f));
+					wallsub->SetRelativeLocation(FVector(x + (WALL_SIZE / 2.0f), y, 0.0f));
+					break;
+				case 3:
+					wallsub->SetRelativeLocation(FVector(x, y - (WALL_SIZE / 2.0f), 0.0f));
+					break;
+				}
 			}
 		}
 	}
@@ -197,50 +226,44 @@ void ALabyrinth::carveWalls() {
 
 			for (int k = 0; k < 4; k++) {
 				if (walls & Cell::WALL_ALL) {
-					UStaticMeshComponent* wallsub = wallsubs[i][j][k];
+					UStaticMeshComponent* wallsub = wall_children_meshes_[i][j][k];
 
-					wallsub->SetStaticMesh(wall_class_);
-					wallsub->SetRelativeScale3D(FVector(5.0f, 0.2f, 5.0f));
 
-					float x = i * WALL_SIZE;
-					float y = j * WALL_SIZE;
 
 					switch (k) {
 					case 0:
 						if (walls & Cell::WALL_NORTH) {
-							wallsub->SetRelativeRotation(FQuat(FVector(0.0f, 0.0f, 1.0f), 1.57f));
-							wallsub->SetRelativeLocation(FVector(x - (WALL_SIZE / 2.0f), y, 0.0f));
+
 						}
 						else
-							wallsubs[i][j][k]->DestroyComponent();
+							wall_children_meshes_[i][j][k]->DestroyComponent();
 						break;
 					case 1:
 						if (walls & Cell::WALL_EAST) {
-							wallsub->SetRelativeLocation(FVector(x, y + (WALL_SIZE / 2.0f), 0.0f));
+
 						}
 						else
-							wallsubs[i][j][k]->DestroyComponent();
+							wall_children_meshes_[i][j][k]->DestroyComponent();
 						break;
 					case 2:
 						if (walls & Cell::WALL_SOUTH) {
-							wallsub->SetRelativeRotation(FQuat(FVector(0.0f, 0.0f, 1.0f), 1.57f));
-							wallsub->SetRelativeLocation(FVector(x + (WALL_SIZE / 2.0f), y, 0.0f));
+
 						}
 						else
-							wallsubs[i][j][k]->DestroyComponent();
+							wall_children_meshes_[i][j][k]->DestroyComponent();
 						break;
 					case 3:
 						if (walls & Cell::WALL_WEST) {
-							wallsub->SetRelativeLocation(FVector(x, y - (WALL_SIZE / 2.0f), 0.0f));
+
 						}
 						else
-							wallsubs[i][j][k]->DestroyComponent();
+							wall_children_meshes_[i][j][k]->DestroyComponent();
 						break;
 					}
 				}
 				else {
 					//If there are no walls, destroy this child actor
-					wallsubs[i][j][k]->DestroyComponent();
+					wall_children_meshes_[i][j][k]->DestroyComponent();
 				}
 			}
 		}
@@ -251,8 +274,8 @@ void ALabyrinth::carveWalls() {
 void ALabyrinth::createExit() {
 	/// Open and place a mark on the exit
 	for (int k = 0; k < 4; k++) {
-		if (IsValid(wallsubs[exitX][exitY][k]))
-			wallsubs[exitX][exitY][k]->DestroyComponent();
+		if (IsValid(wall_children_meshes_[exitX][exitY][k]))
+			wall_children_meshes_[exitX][exitY][k]->DestroyComponent();
 	}
 	FVector location(exitX*WALL_SIZE, exitY*WALL_SIZE, 0.0f);
 	FRotator rotation(0.0f, 0.0f, 0.0f);

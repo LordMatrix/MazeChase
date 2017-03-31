@@ -28,7 +28,7 @@ public:
 	void rebuild();
 
 	void generateModel();
-	void fill();
+	void raiseWalls();
 	void carveWalls();
 	void createExit();
 	void createDoors();
@@ -55,7 +55,7 @@ public:
 		TSubclassOf<AMinotaur> minotaur_class_;
 
 	//Wall child actors
-	UStaticMeshComponent* wallsubs[ROWS][COLS][4];
+	UStaticMeshComponent* wall_children_meshes_[ROWS][COLS][4];
 
 	static const int WALL_SIZE = 500;
 
