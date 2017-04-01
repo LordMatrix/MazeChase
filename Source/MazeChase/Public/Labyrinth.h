@@ -25,6 +25,9 @@ public:
 	virtual void Tick( float DeltaSeconds ) override;
 
 	UFUNCTION(BlueprintCallable, category = "Maze")
+	void demolish();
+
+	UFUNCTION(BlueprintCallable, category = "Maze")
 	void rebuild();
 
 	void generateModel();

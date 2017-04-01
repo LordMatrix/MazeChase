@@ -49,7 +49,27 @@ void ALabyrinth::Tick( float DeltaTime ){
 }
 
 
+void ALabyrinth::demolish() {
+
+	//Demolish walls
+	for (int i = 0; i < ROWS; i++) {
+		for (int j = 0; j < COLS; j++) {
+			for (int k = 0; k < 4; k++) {
+				if (IsValid(wall_children_meshes_[i][j][k])) {
+					wall_children_meshes_[i][j][k]->SetActorEnableCollision(false);
+					wall_children_meshes_[i][j][k]->SetActorHiddenInGame(true);
+					wall_children_meshes_[i][j][k]->Destroy();
+					wall_children_meshes_[i][j][k] = nullptr;
+				}
+			}
+		}
+	}
+}
+
+
 void ALabyrinth::rebuild() {
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, "REBUILDING MAZE");
+	demolish();
 
 	generateModel();
 	raiseWalls();
@@ -255,8 +275,7 @@ void ALabyrinth::carveWalls() {
 						}
 						break;
 					}
-				}
-				else {
+				} else {
 					//If there are no walls, destroy this wall actor
 					wall_children_meshes_[i][j][k]->Destroy();
 				}
