@@ -36,7 +36,7 @@ public:
 		UPawnNoiseEmitterComponent* noise_emiter_;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Config)
-		float step_loudness_ = 0.0f;
+		float step_loudness_ = 2.0f;
 
 protected:
 
