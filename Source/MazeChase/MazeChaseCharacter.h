@@ -32,6 +32,12 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = References)
 		ADoor* door_;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Components)
+		UPawnNoiseEmitterComponent* noise_emiter_;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Config)
+		float step_loudness_ = 0.0f;
+
 protected:
 
 	//Custom callbacks
