@@ -180,22 +180,17 @@ void ALabyrinth::raiseWalls() {
 			//WE CREATE 4 WALLS PER CELL.
 			for (int k = 0; k < 4; k++) {
 				//Create maze's children objects (wall meshes)
-				FString name = "ChildWall_" + FString::FromInt(i) + "_" + FString::FromInt(j) + FString::FromInt(k);
-				
+				FString name = "Wall_" + FString::FromInt(i) + "_" + FString::FromInt(j) + FString::FromInt(k);
 
 				FVector location(i*WALL_SIZE, j*WALL_SIZE, 0.0f);
 				FRotator rotation(0.0f, 0.0f, 0.0f);
 				FActorSpawnParameters spawn_info;
-				//Spawn exit mark
+				//Spawn wall actor
 				wall_children_meshes_[i][j][k] = static_cast<AActor*>(GetWorld()->SpawnActor(wall_class_, &location, &rotation, spawn_info));
-
-
-				//wall_children_meshes_[i][j][k] = CreateDefaultSubobject<UStaticMeshComponent>(FName(*name));
-				//wall_children_meshes_[i][j][k] = ConstructObject<UStaticMeshComponent>(UStaticMeshComponent::StaticClass(), this, FName(*name));
 				AActor* wallsub = wall_children_meshes_[i][j][k];
+				wallsub->SetFolderPath("/Maze/Walls");
 
 				//Assign a mesh class to the child mesh component
-				//wallsub->SetStaticMesh(wall_class_);
 				wallsub->SetActorScale3D(FVector(5.0f, 0.2f, 5.0f));
 
 				//Reposition every wall to form a matrix of walls
@@ -240,37 +235,29 @@ void ALabyrinth::carveWalls() {
 
 					switch (k) {
 					case 0:
-						if (walls & Cell::WALL_NORTH) {
-
-						}
-						else
+						if (!(walls & Cell::WALL_NORTH)) {
 							wall_children_meshes_[i][j][k]->Destroy();
+						}
 						break;
 					case 1:
-						if (walls & Cell::WALL_EAST) {
-
-						}
-						else
+						if (!(walls & Cell::WALL_EAST)) {
 							wall_children_meshes_[i][j][k]->Destroy();
+						}
 						break;
 					case 2:
-						if (walls & Cell::WALL_SOUTH) {
-
-						}
-						else
+						if (!(walls & Cell::WALL_SOUTH)) {
 							wall_children_meshes_[i][j][k]->Destroy();
+						}
 						break;
 					case 3:
-						if (walls & Cell::WALL_WEST) {
-
-						}
-						else
+						if (!(walls & Cell::WALL_WEST)) {
 							wall_children_meshes_[i][j][k]->Destroy();
+						}
 						break;
 					}
 				}
 				else {
-					//If there are no walls, destroy this child actor
+					//If there are no walls, destroy this wall actor
 					wall_children_meshes_[i][j][k]->Destroy();
 				}
 			}
@@ -290,6 +277,7 @@ void ALabyrinth::createExit() {
 	FActorSpawnParameters spawn_info;
 	//Spawn exit mark
 	AActor* exit = static_cast<AActor*>(GetWorld()->SpawnActor(exit_sign_, &location, &rotation, spawn_info));
+	exit->SetFolderPath("/Maze");
 }
 
 
@@ -310,6 +298,7 @@ void ALabyrinth::createDoors() {
 
 			//Spawn door
 			AActor* door = static_cast<AActor*>(GetWorld()->SpawnActor(door_class_, &location, &rotation, spawn_info));
+			door->SetFolderPath("/Maze/Doors");
 
 			x *= WALL_SIZE;
 			y *= WALL_SIZE;
