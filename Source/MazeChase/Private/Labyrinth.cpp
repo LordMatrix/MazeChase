@@ -17,7 +17,7 @@ void ALabyrinth::OnConstruction(const FTransform& Transform) {
 
 	carveWalls();
 	createExit();
-	createDoors();
+	//createDoors();
 	createPlayerStart();	
 }
 
@@ -75,7 +75,7 @@ void ALabyrinth::rebuild() {
 	raiseWalls();
 	carveWalls();
 	createExit();
-	createDoors();
+	//createDoors();
 }
 
 
