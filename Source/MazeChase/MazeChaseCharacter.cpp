@@ -15,6 +15,10 @@ AMazeChaseCharacter::AMazeChaseCharacter()
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
+	//Status default values
+	pawn_dead_ = false;
+	pawn_sneaking_ = false;
+
 	// set our turn rates for input
 	BaseTurnRate = 45.f;
 	BaseLookUpRate = 45.f;
@@ -99,6 +103,12 @@ void AMazeChaseCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 	//Me-defined actions
 	PlayerInputComponent->BindAction("Fly", IE_Pressed, this, &AMazeChaseCharacter::OnInteractInputPressed);
 	PlayerInputComponent->BindAction("Fly", IE_Released, this, &AMazeChaseCharacter::OnInteractInputReleased);
+
+	PlayerInputComponent->BindAction("Sneak", IE_Pressed, this, &AMazeChaseCharacter::OnSneakInputPressed);
+	PlayerInputComponent->BindAction("Sneak", IE_Released, this, &AMazeChaseCharacter::OnSneakInputReleased);
+
+	PlayerInputComponent->BindAction("Run", IE_Pressed, this, &AMazeChaseCharacter::OnRunInputPressed);
+	PlayerInputComponent->BindAction("Run", IE_Released, this, &AMazeChaseCharacter::OnRunInputReleased);
 }
 
 
@@ -115,6 +125,36 @@ void AMazeChaseCharacter::OnInteractInputPressed() {
 
 void AMazeChaseCharacter::OnInteractInputReleased() {
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+}
+
+
+void AMazeChaseCharacter::OnSneakInputPressed() {
+	GetCharacterMovement()->MaxWalkSpeed = 300.0f;
+	pawn_sneaking_ = true;
+	step_loudness_ = 1.0f;
+}
+
+
+void AMazeChaseCharacter::OnSneakInputReleased() {
+	GetCharacterMovement()->MaxWalkSpeed = 600.0f;
+	pawn_sneaking_ = false;
+	step_loudness_ = 2.0f;
+}
+
+
+void AMazeChaseCharacter::OnRunInputPressed() {
+	if (!pawn_sneaking_) {
+		GetCharacterMovement()->MaxWalkSpeed = 900.0f;
+		step_loudness_ = 3.0f;
+	}
+}
+
+
+void AMazeChaseCharacter::OnRunInputReleased() {
+	if (!pawn_sneaking_) {
+		GetCharacterMovement()->MaxWalkSpeed = 600.0f;
+		step_loudness_ = 2.0f;
+	}
 }
 
 
