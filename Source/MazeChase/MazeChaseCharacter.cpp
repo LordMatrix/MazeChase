@@ -19,6 +19,7 @@ AMazeChaseCharacter::AMazeChaseCharacter()
 	pawn_dead_ = false;
 	pawn_sneaking_ = false;
 	pawn_buttoning_ = false;
+	pawn_shouting_ = false;
 
 	// set our turn rates for input
 	BaseTurnRate = 45.f;

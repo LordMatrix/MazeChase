@@ -92,5 +92,7 @@ public:
 	bool pawn_sneaking_;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Status")
 	bool pawn_buttoning_;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Status")
+	bool pawn_shouting_;
 };
 

@@ -1,22 +1,50 @@
 OBLIGATORIO
 ---------------------------------
 
-Menú ppal
-Menú de pausa
-Minotauro con patrullas MinotaurStartNode
-Minotauro persigue a jugador al verlo
-Minotauro vuelve a patrulla si 10-15 segundos tras ver al player
-Muerte del jugador al tocar al Minotauro
-Pantalla de game over con tiempo sobrevivido
-Reinicio del juego (volver a main menu)
-Velocidades del jugador: sigilo, andar y correr
-botones y puertas
-permitir mute sound
-Sonidos: andar/correr personaje, sonido de cascos para minotauro y resoplidos, botones/puertas
+Fix hero-minotaur collision
+permitir mute sound && better pause menu
+moar BP to C++
+C++ HUD
+Subcapas de nivel (art, lightning, gameplay, persistent)
+
+
+MOLARÍA
+---------------------------------
+
+Better lightning: torches
+Better door opening/closing
 
 
 M&D
 ---------------------------------
 
-Minotauro detecta por sonido
 Personaje puede gritar, lo que atrae al minotauro y merodea durante 5 segundos
+
+Crear presentación: desarrollo del proyecto y características técnicas más interesantes.
+
+UPathFollowingComponent con Root Motion (jaja)
+
+
+Documentación
+---------------------------------
+
+UE4
+	* Características del motor utilizadas. Discusión crítica de las mismas.
+
+TDD
+	* Diagrama de relación de clases propias y el uso que se le ha dado al heredar clases del motor específicas
+	* Explicación detallada del funcionamiento e implementación de las clases
+	
+GDD
+	* Reglas del juego
+	* HowToPlay
+	* Diagrama de flujo de los menús
+	
+Issues
+	* Problemas encontrados y soluciones implementadas
+	* Ideas descartadas y justificaciones
+	* (M)Análisis de mecánicas en juegos similares. Ideas de implementación para de las mismas.
+	* (D)Analizar críticamente qué podría añadirse al proyecto presentado 
+	* (D)Creación de una bitácora de trabajo
+	
+	
