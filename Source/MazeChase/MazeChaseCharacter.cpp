@@ -18,6 +18,7 @@ AMazeChaseCharacter::AMazeChaseCharacter()
 	//Status default values
 	pawn_dead_ = false;
 	pawn_sneaking_ = false;
+	pawn_buttoning_ = false;
 
 	// set our turn rates for input
 	BaseTurnRate = 45.f;
@@ -65,10 +66,10 @@ void AMazeChaseCharacter::Tick(float DeltaTime) {
 
 	DrawDebugLine(GetWorld(), ray_start, ray_end, FColor::Red);
 
-	if (out.bBlockingHit && out.GetActor()->GetName().Contains("BP_Door")) {
-		door_ = Cast<ADoor>(out.GetActor());
+	if (out.bBlockingHit && out.GetActor()->GetName().Contains("BP_DoorButton")) {
+		button_ = Cast<ADoorButton>(out.GetActor());
 	} else {
-		door_ = nullptr;
+		button_ = nullptr;
 	}
 }
 
@@ -113,10 +114,8 @@ void AMazeChaseCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 
 
 void AMazeChaseCharacter::OnInteractInputPressed() {
-	if (IsValid(door_)) {
-		door_->disable();
-		FTimerHandle door_handle;
-		GetWorld()->GetTimerManager().SetTimer(door_handle, door_, &ADoor::enable, 2.0f, false);
+	if (IsValid(button_)) {
+		pawn_buttoning_ = true;
 	} else {
 		GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
 	}

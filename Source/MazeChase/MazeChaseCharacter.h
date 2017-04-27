@@ -1,7 +1,7 @@
 // Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
 #pragma once
 #include "GameFramework/Character.h"
-#include "Public/Door.h"
+#include "Public/DoorButton.h"
 #include "MazeChaseCharacter.generated.h"
 
 UCLASS(config=Game)
@@ -30,7 +30,7 @@ public:
 	float BaseLookUpRate;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = References)
-		ADoor* door_;
+		ADoorButton* button_;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Components)
 		UPawnNoiseEmitterComponent* noise_emiter_;
@@ -90,5 +90,7 @@ public:
 	bool pawn_dead_;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Status")
 	bool pawn_sneaking_;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Status")
+	bool pawn_buttoning_;
 };
 
