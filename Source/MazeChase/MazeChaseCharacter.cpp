@@ -52,6 +52,15 @@ AMazeChaseCharacter::AMazeChaseCharacter()
 
 	// Create noise emiter component
 	noise_emiter_ = CreateDefaultSubobject<UPawnNoiseEmitterComponent>(TEXT("NoiseEmiter"));
+
+	//Create torchlight
+	torchlight_ = CreateDefaultSubobject<UChildActorComponent>(TEXT("Torchlight"));
+	torchlight_->SetupAttachment(GetMesh(), FName("headSocket"));
+	static ConstructorHelpers::FClassFinder<AActor> torchlight_class(TEXT("/Game/Blueprints/BP_Torchlight"));
+	torchlight_->SetChildActorClass(torchlight_class.Class);
+	torchlight_->RelativeScale3D = FVector(0.1f, 0.1f, 0.1f);
+	torchlight_->RelativeLocation = FVector(10.0f, 10.0f, 0.0f);
+	torchlight_->RelativeRotation = FRotator(0.0f, 90.0f, 0.0f);
 }
 
 
@@ -111,6 +120,12 @@ void AMazeChaseCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 
 	PlayerInputComponent->BindAction("Run", IE_Pressed, this, &AMazeChaseCharacter::OnRunInputPressed);
 	PlayerInputComponent->BindAction("Run", IE_Released, this, &AMazeChaseCharacter::OnRunInputReleased);
+
+	PlayerInputComponent->BindAction("Shout", IE_Pressed, this, &AMazeChaseCharacter::OnShoutInputPressed);
+	PlayerInputComponent->BindAction("Shout", IE_Released, this, &AMazeChaseCharacter::OnShoutInputReleased);
+
+	PlayerInputComponent->BindAction("TorchLight", IE_Pressed, this, &AMazeChaseCharacter::OnTorchlightInputPressed);
+	PlayerInputComponent->BindAction("TorchLight", IE_Released, this, &AMazeChaseCharacter::OnTorchlightInputReleased);
 }
 
 
@@ -155,6 +170,25 @@ void AMazeChaseCharacter::OnRunInputReleased() {
 		GetCharacterMovement()->MaxWalkSpeed = 600.0f;
 		step_loudness_ = 2.0f;
 	}
+}
+
+
+void AMazeChaseCharacter::OnShoutInputPressed() {
+	pawn_shouting_ = true;
+}
+
+
+void AMazeChaseCharacter::OnShoutInputReleased() {
+	pawn_shouting_ = false;
+}
+
+
+void AMazeChaseCharacter::OnTorchlightInputPressed() {
+	torchlight_->SetVisibility(!torchlight_->bVisible, true);
+}
+
+
+void AMazeChaseCharacter::OnTorchlightInputReleased() {
 }
 
 

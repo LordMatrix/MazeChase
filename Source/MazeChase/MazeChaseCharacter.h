@@ -35,6 +35,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Components)
 		UPawnNoiseEmitterComponent* noise_emiter_;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Components)
+		UChildActorComponent* torchlight_;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Config)
 		float step_loudness_ = 2.0f;
 
@@ -47,6 +50,10 @@ protected:
 	void OnSneakInputReleased();
 	void OnRunInputPressed();
 	void OnRunInputReleased();
+	void OnShoutInputPressed();
+	void OnShoutInputReleased();
+	void OnTorchlightInputPressed();
+	void OnTorchlightInputReleased();
 
 	/** Resets HMD orientation in VR. */
 	void OnResetVR();
