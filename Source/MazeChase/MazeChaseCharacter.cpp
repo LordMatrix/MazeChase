@@ -271,7 +271,6 @@ void AMazeChaseCharacter::MoveRight(float Value)
 
 
 void AMazeChaseCharacter::getScared(float amount) {
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, "OH SHIT");
 	if (nervousness_ < max_nervousness_)
 		nervousness_ += amount;
 }
