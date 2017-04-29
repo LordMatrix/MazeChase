@@ -4,8 +4,7 @@
 #include "MazeChaseGameMode.h"
 #include "MazeChaseCharacter.h"
 
-AMazeChaseGameMode::AMazeChaseGameMode()
-{
+AMazeChaseGameMode::AMazeChaseGameMode() {
 	// set default pawn class to our Blueprinted character
 	/*
 	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/Blueprints/ThirdPersonCharacter"));
@@ -16,4 +15,8 @@ AMazeChaseGameMode::AMazeChaseGameMode()
 		DefaultPawnClass = PlayerPawnBPClass.Class;
 	}
 	*/
+}
+
+void AMazeChaseGameMode::Tick(float DeltaSeconds) {
+
 }

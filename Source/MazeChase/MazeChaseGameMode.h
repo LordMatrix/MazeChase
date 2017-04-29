@@ -10,6 +10,7 @@ class AMazeChaseGameMode : public AGameMode
 
 public:
 	AMazeChaseGameMode();
+	void Tick(float DeltaSeconds) override;
 };
 
 

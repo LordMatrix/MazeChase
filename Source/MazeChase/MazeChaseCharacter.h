@@ -41,6 +41,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Config)
 		float step_loudness_ = 2.0f;
 
+
 protected:
 
 	//Custom callbacks
@@ -93,6 +94,9 @@ public:
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
+	UFUNCTION(BlueprintCallable, Category = "PassiveMethods")
+		void getScared(float amount);
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Status")
 	bool pawn_dead_;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Status")
@@ -100,6 +104,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Status")
 	bool pawn_buttoning_;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Status")
-	bool pawn_shouting_;
+		bool pawn_shouting_;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Status")
+		bool pawn_running_;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Status")
+		float nervousness_;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Status")
+		float max_nervousness_;
 };
 

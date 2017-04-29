@@ -61,12 +61,15 @@ AMazeChaseCharacter::AMazeChaseCharacter()
 	torchlight_->RelativeScale3D = FVector(0.1f, 0.1f, 0.1f);
 	torchlight_->RelativeLocation = FVector(10.0f, 10.0f, 0.0f);
 	torchlight_->RelativeRotation = FRotator(0.0f, 90.0f, 0.0f);
+
+	nervousness_ = 0.0f;
+	max_nervousness_ = 10.0f;
 }
 
 
 void AMazeChaseCharacter::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
-
+	
 	// Raycast looking for doors
 	FHitResult out;
 	FVector ray_start = this->GetActorLocation();
@@ -80,6 +83,14 @@ void AMazeChaseCharacter::Tick(float DeltaTime) {
 		button_ = Cast<ADoorButton>(out.GetActor());
 	} else {
 		button_ = nullptr;
+	}
+
+	//Calm down character
+	if (pawn_running_ || pawn_shouting_) {
+		this->getScared(0.01f);
+	} else {
+	if (nervousness_ > 0.0f)
+		nervousness_ -= 0.01f;
 	}
 }
 
@@ -159,6 +170,7 @@ void AMazeChaseCharacter::OnSneakInputReleased() {
 
 void AMazeChaseCharacter::OnRunInputPressed() {
 	if (!pawn_sneaking_) {
+		pawn_running_ = true;
 		GetCharacterMovement()->MaxWalkSpeed = 900.0f;
 		step_loudness_ = 3.0f;
 	}
@@ -167,6 +179,7 @@ void AMazeChaseCharacter::OnRunInputPressed() {
 
 void AMazeChaseCharacter::OnRunInputReleased() {
 	if (!pawn_sneaking_) {
+		pawn_running_ = false;
 		GetCharacterMovement()->MaxWalkSpeed = 600.0f;
 		step_loudness_ = 2.0f;
 	}
@@ -253,4 +266,12 @@ void AMazeChaseCharacter::MoveRight(float Value)
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
 	}
+}
+
+
+
+void AMazeChaseCharacter::getScared(float amount) {
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, "OH SHIT");
+	if (nervousness_ < max_nervousness_)
+		nervousness_ += amount;
 }
