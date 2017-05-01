@@ -35,6 +35,7 @@ public:
 	void carveWalls();
 	void createExit();
 	void createDoors();
+	void createTorches();
 	void createPlayerStart();
 	void spawnMinotaur();
 
@@ -56,6 +57,8 @@ public:
 		TSubclassOf<AActor> door_class_;
 	UPROPERTY(EditAnywhere, Category = Config)
 		TSubclassOf<AMinotaur> minotaur_class_;
+	UPROPERTY(EditAnywhere, Category = Config)
+		TSubclassOf<AActor> torch_class_;
 
 	//Wall child actors
 	AActor* wall_children_meshes_[ROWS][COLS][4];

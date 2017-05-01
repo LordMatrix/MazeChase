@@ -18,6 +18,7 @@ void ALabyrinth::OnConstruction(const FTransform& Transform) {
 	carveWalls();
 	createExit();
 	//createDoors();
+	createTorches();
 	createPlayerStart();	
 }
 
@@ -76,6 +77,7 @@ void ALabyrinth::rebuild() {
 	carveWalls();
 	createExit();
 	//createDoors();
+	createTorches();
 }
 
 
@@ -211,7 +213,7 @@ void ALabyrinth::raiseWalls() {
 				wallsub->SetFolderPath("/Maze/Walls");
 
 				//Assign a mesh class to the child mesh component
-				wallsub->SetActorScale3D(FVector(5.0f, 0.2f, 5.0f));
+				wallsub->SetActorScale3D(FVector(5.0f, 0.2f, 8.0f));
 
 				//Reposition every wall to form a matrix of walls
 				float x = i * WALL_SIZE;
@@ -332,6 +334,51 @@ void ALabyrinth::createDoors() {
 				door->SetActorRelativeRotation(FQuat(FVector(0.0f, 0.0f, 1.0f), 1.57f));
 			} else if (!(walls & Cell::WALL_WEST)) {
 				door->SetActorRelativeLocation(FVector(x, y-(WALL_SIZE / 2.0f), 0.0f));
+			}
+		}
+	}
+}
+
+
+void ALabyrinth::createTorches() {
+	int num_torches = 20;
+
+	for (int x = 0; x < ROWS; x++) {
+		for (int y = 0; y < COLS; y++) {
+
+			if (!(x % 2 == 0 && y % 3 == 0))
+				continue;
+
+			int walls = this->getWallsAt(x, y);
+			
+			if (walls == Cell::WALL_NONE) {
+				continue;
+			} else {
+				FVector location(x*WALL_SIZE, y*WALL_SIZE, 0.0f);
+				FRotator rotation(0.0f, 0.0f, 0.0f);
+				FActorSpawnParameters spawn_info;
+
+				//Spawn torch
+				AActor* torch = static_cast<AActor*>(GetWorld()->SpawnActor(torch_class_, &location, &rotation, spawn_info));
+				torch->SetFolderPath("/Maze/Torches");
+
+
+				if (walls & Cell::WALL_NORTH) {					
+					torch->SetActorRelativeLocation(FVector(x*WALL_SIZE - (WALL_SIZE / 2.4f), y*WALL_SIZE, WALL_SIZE/5.0f));
+					torch->SetActorRelativeRotation(FQuat(FVector(0.0f, 0.5f, 0.0f), 1.57f));
+				}
+				else if (walls & Cell::WALL_EAST) {
+					torch->SetActorRelativeLocation(FVector(x*WALL_SIZE, y*WALL_SIZE + (WALL_SIZE / 2.4f), WALL_SIZE / 5.0f));
+					torch->SetActorRelativeRotation(FQuat(FVector(0.5f, 0.0f, 0.0f), 1.57f));
+				}
+				else if (walls & Cell::WALL_SOUTH) {
+					torch->SetActorRelativeLocation(FVector(x*WALL_SIZE + (WALL_SIZE / 2.4f), y*WALL_SIZE, WALL_SIZE / 5.0f));
+					torch->SetActorRelativeRotation(FQuat(FVector(0.0f, -0.5f, 0.0f), 1.57f));
+				}
+				else if (walls & Cell::WALL_WEST) {
+					torch->SetActorRelativeLocation(FVector(x*WALL_SIZE, y*WALL_SIZE - (WALL_SIZE / 2.4f), WALL_SIZE / 5.0f));
+					torch->SetActorRelativeRotation(FQuat(FVector(-0.5f, 0.0f, 0.0f), 1.57f));
+				}
 			}
 		}
 	}

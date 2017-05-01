@@ -46,4 +46,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Behavior")
 		AActor* player_ref_;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Behavior")
+		float chase_time_ = 10.0f;
 };

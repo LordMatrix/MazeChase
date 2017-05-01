@@ -85,12 +85,12 @@ void AMazeChaseCharacter::Tick(float DeltaTime) {
 		button_ = nullptr;
 	}
 
-	//Calm down character
+	//Sanity checks
 	if (pawn_running_ || pawn_shouting_) {
 		this->getScared(0.01f);
 	} else {
-	if (nervousness_ > 0.0f)
-		nervousness_ -= 0.01f;
+		if (nervousness_ > 0.0f)
+			nervousness_ -= 0.01f;
 	}
 }
 
