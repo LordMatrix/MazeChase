@@ -1,7 +1,20 @@
 // Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
 #pragma once
+
+
 #include "GameFramework/Character.h"
+
+#include "WidgetLayoutLibrary.h"
+#include "Runtime/UMG/Public/UMG.h"
+#include "Runtime/UMG/Public/UMGStyle.h"
+#include "Runtime/UMG/Public/Slate/SObjectWidget.h"
+#include "Runtime/UMG/Public/IUMGModule.h"
+#include "Runtime/UMG/Public/Blueprint/UserWidget.h"
+
 #include "Public/DoorButton.h"
+#include "MazeChaseGameMode.h"
+#include "Minotaur.h"
+#include "Core/UI/UserWidget_GameEnd.h"
 #include "MazeChaseCharacter.generated.h"
 
 UCLASS(config=Game)
@@ -56,6 +69,8 @@ protected:
 	void OnTorchlightInputPressed();
 	void OnTorchlightInputReleased();
 
+	void Jump() override;
+
 	/** Resets HMD orientation in VR. */
 	void OnResetVR();
 
@@ -77,12 +92,6 @@ protected:
 	 */
 	void LookUpAtRate(float Rate);
 
-	/** Handler for when a touch input begins. */
-	void TouchStarted(ETouchIndex::Type FingerIndex, FVector Location);
-
-	/** Handler for when a touch input stops. */
-	void TouchStopped(ETouchIndex::Type FingerIndex, FVector Location);
-
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -96,6 +105,12 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "PassiveMethods")
 		void getScared(float amount);
+
+	UFUNCTION()
+		void OnCapsuleBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+		void OnCapsuleHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector direction, const FHitResult& SweepResult);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Status")
 	bool pawn_dead_;
@@ -112,5 +127,16 @@ public:
 		float nervousness_;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Status")
 		float max_nervousness_;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+		UFMODEvent* FMOD_jump_event_;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Refs")
+		TSubclassOf<UUserWidget_GameEnd> game_over_widget_class_;
+
+private:
+
+	FFMODEventInstance sound_;
 };
 

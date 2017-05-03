@@ -56,14 +56,19 @@ AMazeChaseCharacter::AMazeChaseCharacter()
 	//Create torchlight
 	torchlight_ = CreateDefaultSubobject<UChildActorComponent>(TEXT("Torchlight"));
 	torchlight_->SetupAttachment(GetMesh(), FName("headSocket"));
-	static ConstructorHelpers::FClassFinder<AActor> torchlight_class(TEXT("/Game/Blueprints/BP_Torchlight"));
+	static ConstructorHelpers::FClassFinder<AActor> torchlight_class(TEXT("/Game/Blueprints/Actor/BP_Torchlight"));
 	torchlight_->SetChildActorClass(torchlight_class.Class);
 	torchlight_->RelativeScale3D = FVector(0.1f, 0.1f, 0.1f);
 	torchlight_->RelativeLocation = FVector(10.0f, 10.0f, 0.0f);
 	torchlight_->RelativeRotation = FRotator(0.0f, 90.0f, 0.0f);
 
+	//Sanity vars
 	nervousness_ = 0.0f;
 	max_nervousness_ = 10.0f;
+
+	//Capsule collisions
+	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AMazeChaseCharacter::OnCapsuleBeginOverlap);
+	GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &AMazeChaseCharacter::OnCapsuleHit);
 }
 
 
@@ -114,10 +119,6 @@ void AMazeChaseCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 	PlayerInputComponent->BindAxis("TurnRate", this, &AMazeChaseCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &AMazeChaseCharacter::LookUpAtRate);
-
-	// handle touch devices
-	PlayerInputComponent->BindTouch(IE_Pressed, this, &AMazeChaseCharacter::TouchStarted);
-	PlayerInputComponent->BindTouch(IE_Released, this, &AMazeChaseCharacter::TouchStopped);
 
 	// VR headset functionality
 	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &AMazeChaseCharacter::OnResetVR);
@@ -210,22 +211,6 @@ void AMazeChaseCharacter::OnResetVR()
 	UHeadMountedDisplayFunctionLibrary::ResetOrientationAndPosition();
 }
 
-void AMazeChaseCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
-{
-	// jump, but only on the first touch
-	if (FingerIndex == ETouchIndex::Touch1)
-	{
-		Jump();
-	}
-}
-
-void AMazeChaseCharacter::TouchStopped(ETouchIndex::Type FingerIndex, FVector Location)
-{
-	if (FingerIndex == ETouchIndex::Touch1)
-	{
-		StopJumping();
-	}
-}
 
 void AMazeChaseCharacter::TurnAtRate(float Rate)
 {
@@ -282,4 +267,46 @@ void AMazeChaseCharacter::MoveRight(float Value)
 void AMazeChaseCharacter::getScared(float amount) {
 	if (nervousness_ < max_nervousness_)
 		nervousness_ += amount;
+}
+
+
+void AMazeChaseCharacter::Jump() {
+	Super::Jump();
+	if (GetCharacterMovement()->MovementMode == EMovementMode::MOVE_Walking) {
+		if (!UFMODBlueprintStatics::EventInstanceIsValid(sound_)) {
+			FTransform trans(GetActorLocation());
+			sound_ = UFMODBlueprintStatics::PlayEventAtLocation(GetWorld(), FMOD_jump_event_, trans, true);
+		}
+	}
+}
+
+
+void AMazeChaseCharacter::OnCapsuleBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) {
+
+	AMinotaur* minos = Cast<AMinotaur>(OtherActor);
+	AMazeChaseGameMode* gm = Cast<AMazeChaseGameMode>(GetWorld()->GetAuthGameMode());
+
+	if (IsValid(gm) && IsValid(minos) && !pawn_dead_) {
+		//Remove widgets
+		UWidgetLayoutLibrary::RemoveAllWidgets(GetWorld());
+
+		//Add game won widget
+		UUserWidget_GameEnd* WidgetInstance = CreateWidget<UUserWidget_GameEnd>(GetWorld(), game_over_widget_class_);
+		WidgetInstance->AddToViewport();
+
+		//Set time passed in widget
+		int time = FMath::TruncToInt(GetGameTimeSinceCreation());
+		WidgetInstance->setTime(time);
+
+		//Mark pawn as dead
+		pawn_dead_ = true;
+
+		//Fade out to menu
+		gm->fadeToMenu();
+	}
+}
+
+
+void AMazeChaseCharacter::OnCapsuleHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector direction, const FHitResult& SweepResult) {
+	this->OnCapsuleBeginOverlap(HitComp, OtherActor, OtherComp, 0, false, SweepResult);
 }
