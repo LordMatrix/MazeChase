@@ -250,7 +250,16 @@ void AMazeChaseCharacter::MoveForward(float Value)
 		// get forward vector
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 		AddMovementInput(Direction, Value);
+
+		//DRUNK EFFECT
+		float dizzines = 0;
+		if ((int)nervousness_ > 0) {
+			dizzines = (sin(GetWorld()->GetTimeSeconds()) * nervousness_ / 10);
+			MoveRight(dizzines);
+		}
 	}
+
+
 }
 
 void AMazeChaseCharacter::MoveRight(float Value)

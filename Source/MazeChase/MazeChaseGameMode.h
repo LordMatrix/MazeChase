@@ -11,6 +11,12 @@ class AMazeChaseGameMode : public AGameMode
 public:
 	AMazeChaseGameMode();
 	void Tick(float DeltaSeconds) override;
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "funcs")
+		void fadeToMenu();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Status")
+		bool game_won_;
 };
 
 

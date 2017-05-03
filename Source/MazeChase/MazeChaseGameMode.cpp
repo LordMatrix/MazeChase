@@ -20,3 +20,8 @@ AMazeChaseGameMode::AMazeChaseGameMode() {
 void AMazeChaseGameMode::Tick(float DeltaSeconds) {
 
 }
+
+
+void AMazeChaseGameMode::fadeToMenu_Implementation() {
+
+}
