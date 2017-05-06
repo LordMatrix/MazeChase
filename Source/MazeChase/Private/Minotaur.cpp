@@ -7,6 +7,12 @@ AMinotaur::AMinotaur() {
 	PrimaryActorTick.bCanEverTick = true;
 	status_ = kIdle;
 	currentPatrolPoint = -1;
+
+	PawnSensing = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensing"));
+	PawnSensing->SetPeripheralVisionAngle(25.f);
+
+	PawnSensing->OnSeePawn.AddDynamic(this, &AMinotaur::OnSeePawn);
+	PawnSensing->OnHearNoise.AddDynamic(this, &AMinotaur::OnHearNoise);
 }
 
 
@@ -17,7 +23,6 @@ void AMinotaur::BeginPlay() {
 
 void AMinotaur::Tick( float DeltaTime ) {
 	Super::Tick( DeltaTime );
-	updateFSM();
 }
 
 
@@ -26,24 +31,33 @@ void AMinotaur::SetupPlayerInputComponent(class UInputComponent* InputComponent)
 }
 
 
-void AMinotaur::senseEnvironment() {
+void AMinotaur::OnHearNoise(APawn *OtherActor, const FVector &Location, float Volume) {
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, "Noise Heard");
+	hearing_ = true;
+	player_ref_ = OtherActor;
 
+	//Reset hearing_ status after a brief while
+	GetWorld()->GetTimerManager().ClearTimer(hearing_reset_handle_);
+	GetWorld()->GetTimerManager().SetTimer(hearing_reset_handle_, this, &AMinotaur::setNoHear, 3.0f, false);
+
+	//Reset player reference after a short while
+	GetWorld()->GetTimerManager().ClearTimer(player_ref_reset_handle_);
+	GetWorld()->GetTimerManager().SetTimer(player_ref_reset_handle_, this, &AMinotaur::setNoPlayerRef, chase_time_, false);
 }
 
 
-void AMinotaur::updateFSM() {
-	switch (status_) {
-		case kIdle:
-			break;
-		case kPatrolling:
-			break;
-		case kRoaring:
-			break;
-		case kCharging:
-			break;
-		case kChasing:
-			break;
-	}
+void AMinotaur::OnSeePawn(APawn *OtherPawn) {
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, "Pawn Seen");
+	seeing_ = true;
+	player_ref_ = OtherPawn;
+
+	//Reset seeing_ status after a brief while
+	GetWorld()->GetTimerManager().ClearTimer(seeing_reset_handle_);
+	GetWorld()->GetTimerManager().SetTimer(seeing_reset_handle_, this, &AMinotaur::setNoSee, 3.0f, false);
+
+	//Reset player reference after a short while
+	GetWorld()->GetTimerManager().ClearTimer(player_ref_reset_handle_);
+	GetWorld()->GetTimerManager().SetTimer(player_ref_reset_handle_, this, &AMinotaur::setNoPlayerRef, chase_time_, false);
 }
 
 
