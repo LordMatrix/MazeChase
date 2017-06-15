@@ -32,7 +32,6 @@ void AMinotaur::SetupPlayerInputComponent(class UInputComponent* InputComponent)
 
 
 void AMinotaur::OnHearNoise(APawn *OtherActor, const FVector &Location, float Volume) {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, "Noise Heard");
 	hearing_ = true;
 	player_ref_ = OtherActor;
 
@@ -47,7 +46,6 @@ void AMinotaur::OnHearNoise(APawn *OtherActor, const FVector &Location, float Vo
 
 
 void AMinotaur::OnSeePawn(APawn *OtherPawn) {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, "Pawn Seen");
 	seeing_ = true;
 	player_ref_ = OtherPawn;
 

@@ -10,15 +10,16 @@ ALabyrinth::ALabyrinth(){
 
 
 void ALabyrinth::OnConstruction(const FTransform& Transform) {
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, "CONSTRUCTING MAZE");
 	// Generate maze model
 	generateModel();
 	raiseWalls();
 
 	carveWalls();
 	createExit();
-	//createDoors();
-	createTorches();
+	if (spawn_doors_)
+		createDoors();
+	if (spawn_torches_)
+		createTorches();
 	createPlayerStart();	
 }
 
@@ -28,15 +29,17 @@ void ALabyrinth::BeginPlay() {
 	spawnMinotaur();
 
 	//Spawn patrol points
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < num_patrol_points_; i++) {
 		int x = rand() % ROWS;
 		int y = rand() % COLS;
 
-		FVector location(x * WALL_SIZE, y * WALL_SIZE, 0.0f);
+		FVector location(x * wall_size_, y * wall_size_, 0.0f);
 		FRotator rotation(0.0f, 0.0f, 0.0f);
 		FActorSpawnParameters spawn_info;
+
 		//Spawn actor
 		ATargetPoint* point = static_cast<ATargetPoint*>(GetWorld()->SpawnActor(ATargetPoint::StaticClass(), &location, &rotation, spawn_info));
+		point->SetActorLabel(FString("MinotaurPatrolNode"));
 		minos_->patrolList.Push(point);
 	}
 }
@@ -44,9 +47,6 @@ void ALabyrinth::BeginPlay() {
 
 void ALabyrinth::Tick( float DeltaTime ){
 	Super::Tick( DeltaTime );
-
-	//if ((int)GetWorld()->GetTimeSeconds() % 5 == 0)
-		//rebuild();
 }
 
 
@@ -69,15 +69,16 @@ void ALabyrinth::demolish() {
 
 
 void ALabyrinth::rebuild() {
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, "REBUILDING MAZE");
 	demolish();
 
 	generateModel();
 	raiseWalls();
 	carveWalls();
 	createExit();
-	//createDoors();
-	createTorches();
+	if (spawn_doors_)
+		createDoors();
+	if (spawn_torches_)
+		createTorches();
 }
 
 
@@ -140,9 +141,6 @@ void ALabyrinth::generateModel() {
 				live.push_back(SOUTH);
 		// If the live vector is not empty:
 		if (live.empty() == false) {
-			// Choose one of the directions in the live vector at random
-			// ran_dir=rand() % live.size();
-			// cout << "Random dir " << ran_dir << " out of " << live.size() << "\n";
 			// Remove the walls between the current cell and the neighbor in that direction
 			// and Change curX and curY to refer to the neighbor
 			maze_[curX][curY].setVisited(true);
@@ -174,8 +172,6 @@ void ALabyrinth::generateModel() {
 			}
 
 			// Push the new current cell onto the trail stack
-			/*cout << "maze_ " << curX << ", " << curY << "\n";
-			cin.ignore(); */
 			trail.push_back(maze_[curX][curY]);
 		} //If the live vector was empty:
 		else {
@@ -199,12 +195,12 @@ void ALabyrinth::generateModel() {
 void ALabyrinth::raiseWalls() {
 	for (int i = 0; i < ROWS; i++) {
 		for (int j = 0; j < COLS; j++) {
-			//WE CREATE 4 WALLS PER CELL.
+			//WE CREATE N WALLS PER CELL.
 			for (int k = 0; k < 4; k++) {
 				//Create maze's children objects (wall meshes)
 				FString name = "Wall_" + FString::FromInt(i) + "_" + FString::FromInt(j) + FString::FromInt(k);
 
-				FVector location(i*WALL_SIZE, j*WALL_SIZE, 0.0f);
+				FVector location(i*wall_size_, j*wall_size_, 0.0f);
 				FRotator rotation(0.0f, 0.0f, 0.0f);
 				FActorSpawnParameters spawn_info;
 				//Spawn wall actor
@@ -216,24 +212,24 @@ void ALabyrinth::raiseWalls() {
 				wallsub->SetActorScale3D(FVector(5.0f, 0.2f, 8.0f));
 
 				//Reposition every wall to form a matrix of walls
-				float x = i * WALL_SIZE;
-				float y = j * WALL_SIZE;
+				float x = i * wall_size_;
+				float y = j * wall_size_;
 
 				//Move the wall from the center of the matrix's cell to its proper location&rotation
 				switch (k) {
 				case 0:
 					wallsub->SetActorRelativeRotation(FQuat(FVector(0.0f, 0.0f, 1.0f), 1.57f));
-					wallsub->SetActorRelativeLocation(FVector(x - (WALL_SIZE / 2.0f), y, 0.0f));
+					wallsub->SetActorRelativeLocation(FVector(x - (wall_size_ / 2.0f), y, 0.0f));
 					break;
 				case 1:
-					wallsub->SetActorRelativeLocation(FVector(x, y + (WALL_SIZE / 2.0f), 0.0f));
+					wallsub->SetActorRelativeLocation(FVector(x, y + (wall_size_ / 2.0f), 0.0f));
 					break;
 				case 2:
 					wallsub->SetActorRelativeRotation(FQuat(FVector(0.0f, 0.0f, 1.0f), 1.57f));
-					wallsub->SetActorRelativeLocation(FVector(x + (WALL_SIZE / 2.0f), y, 0.0f));
+					wallsub->SetActorRelativeLocation(FVector(x + (wall_size_ / 2.0f), y, 0.0f));
 					break;
 				case 3:
-					wallsub->SetActorRelativeLocation(FVector(x, y - (WALL_SIZE / 2.0f), 0.0f));
+					wallsub->SetActorRelativeLocation(FVector(x, y - (wall_size_ / 2.0f), 0.0f));
 					break;
 				}
 			}
@@ -252,8 +248,7 @@ void ALabyrinth::carveWalls() {
 			for (int k = 0; k < 4; k++) {
 				if (walls & Cell::WALL_ALL) {
 					AActor* wallsub = wall_children_meshes_[i][j][k];
-
-
+					if (!IsValid(wallsub)) continue;
 
 					switch (k) {
 					case 0:
@@ -277,7 +272,7 @@ void ALabyrinth::carveWalls() {
 						}
 						break;
 					}
-				} else {
+				} else if (walls) {
 					//If there are no walls, destroy this wall actor
 					wall_children_meshes_[i][j][k]->Destroy();
 				}
@@ -293,7 +288,7 @@ void ALabyrinth::createExit() {
 		if (IsValid(wall_children_meshes_[exitX][exitY][k]))
 			wall_children_meshes_[exitX][exitY][k]->Destroy();
 	}
-	FVector location(exitX*WALL_SIZE, exitY*WALL_SIZE, 0.0f);
+	FVector location(exitX*wall_size_, exitY*wall_size_, 0.0f);
 	FRotator rotation(0.0f, 0.0f, 0.0f);
 	FActorSpawnParameters spawn_info;
 	//Spawn exit mark
@@ -303,9 +298,10 @@ void ALabyrinth::createExit() {
 
 
 void ALabyrinth::createDoors() {
-	int num_doors = 20;
+	
+	int remaining_doors = num_doors_;
 
-	for (int i = 0; i < num_doors; i++) {
+	for (int i = 0; i < ROWS*COLS && remaining_doors > 0; i++) {
 		int x = rand() % ROWS;
 		int y = rand() % COLS;
 
@@ -313,27 +309,28 @@ void ALabyrinth::createDoors() {
 		if (walls == Cell::WALL_ALL) {
 			continue;
 		} else {
-			FVector location(x*WALL_SIZE, y*WALL_SIZE, 0.0f);
+			FVector location(x*wall_size_, y*wall_size_, 0.0f);
 			FRotator rotation(0.0f, 0.0f, 0.0f);
 			FActorSpawnParameters spawn_info;
 
 			//Spawn door
 			AActor* door = static_cast<AActor*>(GetWorld()->SpawnActor(door_class_, &location, &rotation, spawn_info));
 			door->SetFolderPath("/Maze/Doors");
+			remaining_doors--;
 
-			x *= WALL_SIZE;
-			y *= WALL_SIZE;
+			x *= wall_size_;
+			y *= wall_size_;
 
 			if (!(walls & Cell::WALL_NORTH)) {
-				door->SetActorRelativeLocation(FVector(x-(WALL_SIZE / 2.0f), y, 0.0f));
+				door->SetActorRelativeLocation(FVector(x-(wall_size_ / 2.0f), y, 0.0f));
 				door->SetActorRelativeRotation(FQuat(FVector(0.0f, 0.0f, 1.0f), 1.57f));
 			} else if (!(walls & Cell::WALL_EAST)) {
-				door->SetActorRelativeLocation(FVector(x, y+(WALL_SIZE / 2.0f), 0.0f));
+				door->SetActorRelativeLocation(FVector(x, y+(wall_size_ / 2.0f), 0.0f));
 			} else if (!(walls & Cell::WALL_SOUTH)) {
-				door->SetActorRelativeLocation(FVector(x + (WALL_SIZE / 2.0f), y, 0.0f));
+				door->SetActorRelativeLocation(FVector(x + (wall_size_ / 2.0f), y, 0.0f));
 				door->SetActorRelativeRotation(FQuat(FVector(0.0f, 0.0f, 1.0f), 1.57f));
 			} else if (!(walls & Cell::WALL_WEST)) {
-				door->SetActorRelativeLocation(FVector(x, y-(WALL_SIZE / 2.0f), 0.0f));
+				door->SetActorRelativeLocation(FVector(x, y-(wall_size_ / 2.0f), 0.0f));
 			}
 		}
 	}
@@ -341,44 +338,41 @@ void ALabyrinth::createDoors() {
 
 
 void ALabyrinth::createTorches() {
-	int num_torches = 20;
 
-	for (int x = 0; x < ROWS; x++) {
-		for (int y = 0; y < COLS; y++) {
+	int remaining_torches = num_torches_;
 
-			if (!(x % 2 == 0 && y % 3 == 0))
-				continue;
+	for (int i = 0; i < ROWS*COLS && remaining_torches > 0; i++) {
+		int x = rand() % ROWS;
+		int y = rand() % COLS;
+		int walls = this->getWallsAt(x, y);
+	
+		if (walls == Cell::WALL_NONE) {
+			continue;
+		} else {
+			FVector location(x*wall_size_, y*wall_size_, 0.0f);
+			FRotator rotation(0.0f, 0.0f, 0.0f);
+			FActorSpawnParameters spawn_info;
 
-			int walls = this->getWallsAt(x, y);
-			
-			if (walls == Cell::WALL_NONE) {
-				continue;
-			} else {
-				FVector location(x*WALL_SIZE, y*WALL_SIZE, 0.0f);
-				FRotator rotation(0.0f, 0.0f, 0.0f);
-				FActorSpawnParameters spawn_info;
+			//Spawn torch
+			AActor* torch = static_cast<AActor*>(GetWorld()->SpawnActor(torch_class_, &location, &rotation, spawn_info));
+			torch->SetFolderPath("/Maze/Torches");
+			remaining_torches--;
 
-				//Spawn torch
-				AActor* torch = static_cast<AActor*>(GetWorld()->SpawnActor(torch_class_, &location, &rotation, spawn_info));
-				torch->SetFolderPath("/Maze/Torches");
-
-
-				if (walls & Cell::WALL_NORTH) {					
-					torch->SetActorRelativeLocation(FVector(x*WALL_SIZE - (WALL_SIZE / 2.4f), y*WALL_SIZE, WALL_SIZE/5.0f));
-					torch->SetActorRelativeRotation(FQuat(FVector(0.0f, 0.5f, 0.0f), 1.57f));
-				}
-				else if (walls & Cell::WALL_EAST) {
-					torch->SetActorRelativeLocation(FVector(x*WALL_SIZE, y*WALL_SIZE + (WALL_SIZE / 2.4f), WALL_SIZE / 5.0f));
-					torch->SetActorRelativeRotation(FQuat(FVector(0.5f, 0.0f, 0.0f), 1.57f));
-				}
-				else if (walls & Cell::WALL_SOUTH) {
-					torch->SetActorRelativeLocation(FVector(x*WALL_SIZE + (WALL_SIZE / 2.4f), y*WALL_SIZE, WALL_SIZE / 5.0f));
-					torch->SetActorRelativeRotation(FQuat(FVector(0.0f, -0.5f, 0.0f), 1.57f));
-				}
-				else if (walls & Cell::WALL_WEST) {
-					torch->SetActorRelativeLocation(FVector(x*WALL_SIZE, y*WALL_SIZE - (WALL_SIZE / 2.4f), WALL_SIZE / 5.0f));
-					torch->SetActorRelativeRotation(FQuat(FVector(-0.5f, 0.0f, 0.0f), 1.57f));
-				}
+			if (walls & Cell::WALL_NORTH) {					
+				torch->SetActorRelativeLocation(FVector(x*wall_size_ - (wall_size_ / 2.4f), y*wall_size_, wall_size_/5.0f));
+				torch->SetActorRelativeRotation(FQuat(FVector(0.0f, 0.5f, 0.0f), 1.57f));
+			}
+			else if (walls & Cell::WALL_EAST) {
+				torch->SetActorRelativeLocation(FVector(x*wall_size_, y*wall_size_ + (wall_size_ / 2.4f), wall_size_ / 5.0f));
+				torch->SetActorRelativeRotation(FQuat(FVector(0.5f, 0.0f, 0.0f), 1.57f));
+			}
+			else if (walls & Cell::WALL_SOUTH) {
+				torch->SetActorRelativeLocation(FVector(x*wall_size_ + (wall_size_ / 2.4f), y*wall_size_, wall_size_ / 5.0f));
+				torch->SetActorRelativeRotation(FQuat(FVector(0.0f, -0.5f, 0.0f), 1.57f));
+			}
+			else if (walls & Cell::WALL_WEST) {
+				torch->SetActorRelativeLocation(FVector(x*wall_size_, y*wall_size_ - (wall_size_ / 2.4f), wall_size_ / 5.0f));
+				torch->SetActorRelativeRotation(FQuat(FVector(-0.5f, 0.0f, 0.0f), 1.57f));
 			}
 		}
 	}
@@ -392,7 +386,7 @@ void ALabyrinth::createPlayerStart() {
 	SpawnInfo.Instigator = NULL;
 	SpawnInfo.bDeferConstruction = false;
 
-	FVector Loc(hero_startX*WALL_SIZE, hero_startY*WALL_SIZE, 10.0f);
+	FVector Loc(hero_startX*wall_size_, hero_startY*wall_size_, 10.0f);
 
 	GetWorld()->SpawnActor<APlayerStart>(APlayerStart::StaticClass(), Loc, FRotator::ZeroRotator, SpawnInfo);
 }
@@ -401,7 +395,7 @@ void ALabyrinth::createPlayerStart() {
 void ALabyrinth::spawnMinotaur() {
 	minotaur_startX = minotaur_startY = 10;
 
-	FVector location(minotaur_startX*WALL_SIZE, minotaur_startY*WALL_SIZE, 0.0f);
+	FVector location(minotaur_startX*wall_size_, minotaur_startY*wall_size_, 0.0f);
 	FRotator rotation(0.0f, 0.0f, 0.0f);
 	FActorSpawnParameters spawn_info;
 	//Spawn minotaur
